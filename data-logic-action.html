@@ -1,0 +1,738 @@
+<title>RLWRLD Ontology — Data · Logic · Action</title>
+<style>
+  :root{
+    --bg:#f5f7fa; --surface:#ffffff; --surface-2:#eef1f6; --surface-3:#e6eaf1;
+    --ink:#141d2b; --ink-soft:#54627a; --ink-faint:#8b98ad; --line:#d6dce6;
+    --data:#245fd0; --data-soft:#e7eefc; --data-line:#b9cef4;
+    --logic:#a86910; --logic-soft:#f7ecd6; --logic-line:#ecd3a0;
+    --action:#178a5c; --action-soft:#dcefe5; --action-line:#a9dcc4;
+    --shadow:0 1px 2px rgba(20,29,43,.06),0 6px 20px rgba(20,29,43,.05);
+    --font-sans:-apple-system,BlinkMacSystemFont,"Segoe UI","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+    --font-mono:ui-monospace,"SF Mono","Menlo","Consolas","Liberation Mono",monospace;
+    --maxw:1080px;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --bg:#0d131b; --surface:#151d28; --surface-2:#1c2531; --surface-3:#243040;
+      --ink:#e9eef5; --ink-soft:#97a5ba; --ink-faint:#6a788d; --line:#2a3543;
+      --data:#6fa4ff; --data-soft:#152740; --data-line:#2d4a76;
+      --logic:#e2a949; --logic-soft:#2c2410; --logic-line:#5a4a22;
+      --action:#48c88e; --action-soft:#10251c; --action-line:#245840;
+      --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="light"]{
+    --bg:#f5f7fa; --surface:#ffffff; --surface-2:#eef1f6; --surface-3:#e6eaf1;
+    --ink:#141d2b; --ink-soft:#54627a; --ink-faint:#8b98ad; --line:#d6dce6;
+    --data:#245fd0; --data-soft:#e7eefc; --data-line:#b9cef4;
+    --logic:#a86910; --logic-soft:#f7ecd6; --logic-line:#ecd3a0;
+    --action:#178a5c; --action-soft:#dcefe5; --action-line:#a9dcc4;
+    --shadow:0 1px 2px rgba(20,29,43,.06),0 6px 20px rgba(20,29,43,.05);
+  }
+  :root[data-theme="dark"]{
+    --bg:#0d131b; --surface:#151d28; --surface-2:#1c2531; --surface-3:#243040;
+    --ink:#e9eef5; --ink-soft:#97a5ba; --ink-faint:#6a788d; --line:#2a3543;
+    --data:#6fa4ff; --data-soft:#152740; --data-line:#2d4a76;
+    --logic:#e2a949; --logic-soft:#2c2410; --logic-line:#5a4a22;
+    --action:#48c88e; --action-soft:#10251c; --action-line:#245840;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.35);
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-sans);
+    line-height:1.65;-webkit-font-smoothing:antialiased;font-size:16px}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+  section{padding:44px 0;border-top:1px solid var(--line)}
+  section:first-of-type{border-top:none}
+
+  h1,h2,h3{text-wrap:balance;letter-spacing:-.02em;line-height:1.25;margin:0}
+  h1{font-size:clamp(1.9rem,4.6vw,3rem);font-weight:780}
+  h2{font-size:clamp(1.35rem,3vw,1.9rem);font-weight:760;margin-bottom:6px}
+  h3{font-size:1.05rem;font-weight:700}
+  p{margin:0}
+  .lede{color:var(--ink-soft);font-size:1.08rem;max-width:62ch}
+  .eyebrow{font-family:var(--font-mono);font-size:.72rem;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--ink-faint);font-weight:600}
+  .sec-head{margin-bottom:26px}
+  .sec-head .eyebrow{display:block;margin-bottom:10px}
+  .note{color:var(--ink-soft);font-size:.93rem;max-width:66ch}
+
+  .tok{font-family:var(--font-mono);font-size:.78rem;padding:2px 7px;border-radius:5px;
+    background:var(--surface-2);border:1px solid var(--line);white-space:nowrap;display:inline-block}
+  .tok.cls{background:var(--data-soft);border-color:var(--data-line);color:var(--data)}
+  .tok.src{background:var(--surface-2);color:var(--ink-soft)}
+  .tok.ext{background:var(--logic-soft);border-color:var(--logic-line);color:var(--logic)}
+  .chips{display:flex;flex-wrap:wrap;gap:6px}
+
+  .hero{padding:52px 0 40px}
+  .hero .kicker{font-family:var(--font-mono);font-size:.8rem;letter-spacing:.12em;
+    color:var(--ink-faint);margin-bottom:16px}
+  .hero h1{margin-bottom:16px}
+  .legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px}
+  .legend .pill{display:flex;align-items:center;gap:9px;padding:8px 13px;border-radius:9px;
+    background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow);font-size:.9rem}
+  .legend .dot{width:11px;height:11px;border-radius:50%;flex:none}
+  .dot.d{background:var(--data)} .dot.l{background:var(--logic)} .dot.a{background:var(--action)}
+  .legend b{font-weight:680}
+  .legend span{color:var(--ink-soft)}
+
+  .flow{display:flex;align-items:stretch;gap:8px;margin-top:8px}
+  .stage{flex:1;min-width:0;background:var(--surface);border:1px solid var(--line);
+    border-radius:13px;padding:16px 15px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:10px}
+  .stage .st-top{display:flex;align-items:center;gap:8px}
+  .stage .st-ico{width:26px;height:26px;border-radius:7px;flex:none;display:grid;place-items:center;
+    font-family:var(--font-mono);font-weight:700;font-size:.85rem;color:#fff}
+  .stage h3{font-size:1rem}
+  .stage.data{border-top:3px solid var(--data)} .stage.data .st-ico{background:var(--data)}
+  .stage.onto{border-top:3px solid var(--ink-soft)} .stage.onto .st-ico{background:var(--ink-soft)}
+  .stage.logic{border-top:3px solid var(--logic)} .stage.logic .st-ico{background:var(--logic)}
+  .stage.action{border-top:3px solid var(--action)} .stage.action .st-ico{background:var(--action)}
+  .stage p.sm{font-size:.84rem;color:var(--ink-soft)}
+  .stage ul{margin:0;padding-left:0;list-style:none;display:flex;flex-direction:column;gap:5px}
+  .stage li{font-size:.82rem;color:var(--ink);display:flex;gap:7px;align-items:baseline}
+  .stage li::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--ink-faint);flex:none;margin-top:8px}
+  .arrow{display:grid;place-items:center;flex:none;color:var(--ink-faint);font-size:1.4rem;padding:0 2px}
+  .flow-verb{font-family:var(--font-mono);font-size:.66rem;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.06em;text-align:center;margin-top:2px}
+  @media (max-width:860px){
+    .flow{flex-direction:column}
+    .arrow{transform:rotate(90deg);padding:4px 0}
+  }
+
+  .grid{display:grid;gap:16px}
+  .cols-2{grid-template-columns:repeat(2,1fr)}
+  @media (max-width:760px){.cols-2{grid-template-columns:1fr}}
+
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:13px;
+    padding:18px 18px;box-shadow:var(--shadow)}
+  .card.data-c{border-left:3px solid var(--data)}
+  .card.ext-c{border-left:3px solid var(--logic)}
+  .card h3{margin-bottom:4px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .card .role{font-family:var(--font-mono);font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--ink-faint);margin-bottom:12px;display:block}
+  .maps{display:flex;flex-direction:column;gap:12px;margin-top:6px}
+  .map-row{display:flex;flex-direction:column;gap:6px}
+  .to{color:var(--data);font-family:var(--font-mono);font-size:.9rem}
+
+  .umb{display:flex;align-items:center;gap:10px;margin:6px 0 14px;flex-wrap:wrap}
+  .umb .tag{font-family:var(--font-mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;
+    padding:4px 10px;border-radius:6px;font-weight:600}
+  .tag.internal{background:var(--data-soft);color:var(--data);border:1px solid var(--data-line)}
+  .tag.external{background:var(--logic-soft);color:var(--logic);border:1px solid var(--logic-line)}
+  .umb p{font-size:.9rem;color:var(--ink-soft);flex:1;min-width:240px}
+
+  .pipe{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:10px}
+  .pipe .node{font-family:var(--font-mono);font-size:.74rem;padding:6px 9px;border-radius:6px;
+    background:var(--logic-soft);border:1px solid var(--logic-line);color:var(--logic)}
+  .pipe .sep{color:var(--ink-faint);font-size:.9rem}
+
+  /* schema cards */
+  .schema-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:6px}
+  @media (max-width:760px){.schema-grid{grid-template-columns:1fr}}
+  .scard{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--data);
+    border-radius:12px;padding:15px 16px;box-shadow:var(--shadow)}
+  .scard.ext{border-left-color:var(--logic)}
+  .scard.str{border-left-color:var(--action)}
+  .scard.prov{grid-column:1/-1;border-left-color:var(--ink-soft);background:var(--surface-2)}
+  .scard .ch{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:2px}
+  .scard .cn{font-family:var(--font-mono);font-weight:700;font-size:.95rem;color:var(--data)}
+  .scard.ext .cn{color:var(--logic)} .scard.str .cn{color:var(--action)} .scard.prov .cn{color:var(--ink)}
+  .scard .br{font-family:var(--font-mono);font-size:.68rem;color:var(--ink-faint)}
+  .scard .role2{font-size:.78rem;color:var(--ink-soft);margin:2px 0 4px}
+  .flh{font-family:var(--font-mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--ink-faint);margin:11px 0 3px}
+  .fl{display:flex;flex-direction:column}
+  .fr{display:flex;justify-content:space-between;gap:12px;font-size:.8rem;padding:4px 0;border-bottom:1px solid var(--surface-2)}
+  .fr:last-child{border-bottom:none}
+  .fr .fn{font-family:var(--font-mono);color:var(--ink)}
+  .fr.rel .fn{color:var(--ink-soft)}
+  .fr .ft{font-size:.74rem;color:var(--ink-faint);text-align:right;flex:none}
+  .fr .ft .en{font-family:var(--font-mono)}
+  .scard .ex{margin-top:11px;padding-top:9px;border-top:1px dashed var(--line);font-size:.75rem;color:var(--ink-soft)}
+  .scard .ex b{color:var(--ink-soft);font-weight:600}
+  .restbox{margin-top:16px;background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:15px 17px}
+  .restbox .flh{margin-top:0}
+
+  .prims{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:4px}
+  @media (max-width:760px){.prims{grid-template-columns:1fr}}
+  .prim{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--logic);
+    border-radius:11px;padding:14px 15px;box-shadow:var(--shadow)}
+  .prim .name{font-family:var(--font-mono);font-weight:700;font-size:.9rem;color:var(--logic);margin-bottom:4px}
+  .prim .desc{font-size:.85rem;color:var(--ink-soft)}
+  .prim .flds{margin-top:8px}
+
+  .tbl-wrap{overflow-x:auto;margin-top:8px;border:1px solid var(--line);border-radius:11px;background:var(--surface)}
+  table{border-collapse:collapse;width:100%;font-size:.86rem;min-width:560px}
+  th,td{text-align:left;padding:10px 13px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font-family:var(--font-mono);font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--ink-faint);font-weight:600;background:var(--surface-2)}
+  tr:last-child td{border-bottom:none}
+
+  .acts{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  @media (max-width:760px){.acts{grid-template-columns:1fr}}
+  .act{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--action);
+    border-radius:11px;padding:14px 15px;box-shadow:var(--shadow)}
+  .act h4{margin:0 0 3px;font-size:.96rem;font-weight:700}
+  .act .meta{font-size:.82rem;color:var(--ink-soft)}
+  .act .badge{font-family:var(--font-mono);font-size:.64rem;letter-spacing:.05em;text-transform:uppercase;
+    padding:2px 7px;border-radius:5px;font-weight:600;margin-top:9px;display:inline-block}
+  .badge.free{background:var(--action-soft);color:var(--action);border:1px solid var(--action-line)}
+  .badge.appr{background:var(--logic-soft);color:var(--logic);border:1px solid var(--logic-line)}
+
+  .boundary{margin-top:16px;background:var(--surface-2);border:1px solid var(--line);border-radius:11px;padding:15px 17px}
+  .boundary h4{margin:0 0 8px;font-size:.9rem;font-family:var(--font-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft)}
+  .boundary .row{display:flex;gap:10px;align-items:baseline;font-size:.88rem;margin-top:5px}
+  .boundary .k{flex:none;width:56px;font-weight:700}
+  .k.free{color:var(--action)} .k.appr{color:var(--logic)}
+
+  .trace{display:flex;flex-direction:column;gap:0;margin-top:8px}
+  .step{display:grid;grid-template-columns:38px 1fr;gap:14px;position:relative;padding-bottom:20px}
+  .step:not(:last-child)::before{content:"";position:absolute;left:18px;top:34px;bottom:-2px;width:2px;background:var(--line)}
+  .step .mk{width:38px;height:38px;border-radius:9px;display:grid;place-items:center;font-family:var(--font-mono);
+    font-weight:700;font-size:.9rem;color:#fff;z-index:1}
+  .step.d .mk{background:var(--data)} .step.o .mk{background:var(--ink-soft)}
+  .step.l .mk{background:var(--logic)} .step.a .mk{background:var(--action)}
+  .step .body h4{margin:0 0 3px;font-size:.98rem}
+  .step .body p{font-size:.87rem;color:var(--ink-soft)}
+  .step .body .k2{font-family:var(--font-mono);font-size:.76rem;color:var(--ink);background:var(--surface-2);
+    border:1px solid var(--line);padding:2px 6px;border-radius:5px;display:inline-block;margin-top:6px}
+
+  footer{padding:30px 0 50px;color:var(--ink-faint);font-size:.82rem;border-top:1px solid var(--line)}
+  .callout{background:var(--data-soft);border:1px solid var(--data-line);border-radius:11px;
+    padding:14px 17px;margin-top:18px;font-size:.9rem;color:var(--ink)}
+  .callout b{color:var(--data)}
+  a{color:var(--data)}
+</style>
+
+<div class="wrap">
+
+  <header class="hero">
+    <div class="kicker">RLWRLD · Business Digital Twin Ontology</div>
+    <h1>데이터가 판단이 되고, 판단이 행동이 되기까지</h1>
+    <p class="lede">리얼월드가 실제로 일하는 방식을 명사(클래스)와 동사(관계)로 옮겨 놓은 온톨로지입니다.
+      팔란티어의 <b>Object–Link–Action</b> 방식을 따르며, 세 개의 축이 하나의 흐름으로 이어집니다.</p>
+    <div class="legend">
+      <div class="pill"><span class="dot d"></span><b>Data</b><span>비즈니스의 지금 상태</span></div>
+      <div class="pill"><span class="dot l"></span><b>Logic</b><span>상황을 판단하는 방법</span></div>
+      <div class="pill"><span class="dot a"></span><b>Action</b><span>판단을 현실로 옮기는 통로</span></div>
+    </div>
+  </header>
+
+  <!-- MASTER FLOW -->
+  <section>
+    <div class="sec-head">
+      <span class="eyebrow">전체 구조 · 한눈에</span>
+      <h2>네 단계가 왼쪽에서 오른쪽으로 이어집니다</h2>
+      <p class="note">원천이 온톨로지에 데이터를 채우면, 로직이 그 데이터와 관계를 읽어 상황을 판단하고, 판단한 결과가 정해진 채널로 나갑니다. 온톨로지는 세 축이 함께 기대는 공통 뼈대입니다.</p>
+    </div>
+    <div class="flow">
+      <div class="stage data">
+        <div class="st-top"><span class="st-ico">D</span><h3>Data 원천</h3></div>
+        <p class="sm">Internal 네 갈래 + External</p>
+        <ul>
+          <li>사업 · 기술 · 커뮤니케이션 · 집계/일정</li>
+          <li>경쟁사 인텔 파이프라인</li>
+        </ul>
+      </div>
+      <div class="arrow" aria-hidden="true">→<div class="flow-verb">채운다</div></div>
+      <div class="stage onto">
+        <div class="st-top"><span class="st-ico">O</span><h3>Ontology</h3></div>
+        <p class="sm">9개 도메인 · 36개 클래스</p>
+        <ul>
+          <li>딜 46 · 경쟁사 33 · 국책 17</li>
+          <li>가상랩 6곳 · 어카운트 35곳 · 우리 모델 4</li>
+          <li>회의록 77건 · Person 113명 · 출처·신선도 기록</li>
+        </ul>
+      </div>
+      <div class="arrow" aria-hidden="true">→<div class="flow-verb">읽는다</div></div>
+      <div class="stage logic">
+        <div class="st-top"><span class="st-ico">L</span><h3>Logic</h3></div>
+        <p class="sm">Agent setup 1–11</p>
+        <ul>
+          <li>공통 연산 6가지</li>
+          <li>변경·정체·격차·신규를 감지</li>
+        </ul>
+      </div>
+      <div class="arrow" aria-hidden="true">→<div class="flow-verb">내보낸다</div></div>
+      <div class="stage action">
+        <div class="st-top"><span class="st-ico">A</span><h3>Action</h3></div>
+        <p class="sm">슬랙 · 노션 · 캘린더</p>
+        <ul>
+          <li>주간 브리핑 · 전략 메모</li>
+          <li>발신은 승인을 거침</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- DATA DETAIL -->
+  <section>
+    <div class="sec-head">
+      <span class="eyebrow">축 1 · Data</span>
+      <h2>데이터는 어디서 오는가</h2>
+      <p class="note">데이터는 크게 사내에서 벌어지는 일(Internal)과 업계에서 벌어지는 일(External)로 나뉩니다. Internal은 다시 네 갈래로 갈라지고, 각 갈래의 실제 원천이 정해진 클래스를 채웁니다.</p>
+    </div>
+
+    <div class="umb">
+      <span class="tag internal">Internal</span>
+      <p>사내 원천이 온톨로지 클래스를 채웁니다. 화살표(<span class="to">→</span>)는 "이 원천이 이 클래스를 채운다"는 뜻입니다.</p>
+    </div>
+
+    <div class="grid cols-2">
+      <div class="card data-c">
+        <h3>① 사업 <span class="tok">Business</span></h3>
+        <span class="role">영업 · 파트너십 · 국책</span>
+        <div class="maps">
+          <div class="map-row">
+            <div class="chips"><span class="tok src">SI Progress DB</span><span class="tok src">국책 26 Dashboard</span><span class="tok src">Partnership Meeting Log</span><span class="tok src">BD status dashboard</span></div>
+            <div class="chips"><span class="to">→</span><span class="tok cls">Account</span><span class="tok cls">Deal</span><span class="tok cls">NationalProject</span><span class="tok cls">Partnership</span></div>
+          </div>
+          <p class="note">딜은 SI Progress DB 한 곳에서 회사×상품 단위로 46건을 실측했습니다. 진행 단계, 계약 금액, 성사 확률, 기간까지 그대로 들어옵니다.</p>
+        </div>
+      </div>
+
+      <div class="card data-c">
+        <h3>② 기술 <span class="tok">Tech</span></h3>
+        <span class="role">가상랩 · 제품 · 연구</span>
+        <div class="maps">
+          <div class="map-row">
+            <div class="chips"><span class="tok src">Virtual Lab 워크스페이스</span><span class="tok src">#team_virtual-lab</span><span class="tok src">Robotics Platform Team</span><span class="tok src">Model Team</span></div>
+            <div class="chips"><span class="to">→</span><span class="tok cls">VirtualLab</span><span class="tok cls">ResearchProject</span><span class="tok cls">Product</span><span class="tok cls">Model</span><span class="tok cls">Dataset</span><span class="tok cls">Hardware</span></div>
+          </div>
+          <p class="note">노션의 회의록 데이터베이스는 정리된 기록을, 슬랙 채널은 교수님들이 직접 참여하는 실시간 논의를 담습니다. 둘이 서로를 보완합니다.</p>
+        </div>
+      </div>
+
+      <div class="card data-c">
+        <h3>③ 커뮤니케이션 <span class="tok">Comms</span></h3>
+        <span class="role">내러티브 · 덱 · 회의록</span>
+        <div class="maps">
+          <div class="map-row">
+            <div class="chips"><span class="tok src">Biz Narrative</span><span class="tok src">Drive 덱 (IR 4.2.1 · Business 3.7)</span><span class="tok src">회의록 DB 5곳</span></div>
+            <div class="chips"><span class="to">→</span><span class="tok cls">Narrative</span><span class="tok cls">Deck</span><span class="tok cls">MeetingNote</span></div>
+          </div>
+          <p class="note">덱에 담긴 메시지와 실제 내부 진행을 맞대어 보고, 덱에 더 넣거나 뺄 메시지를 찾아내는 재료가 됩니다.</p>
+        </div>
+      </div>
+
+      <div class="card data-c">
+        <h3>④ 집계 · 일정 <span class="tok">Aggregate</span></h3>
+        <span class="role">요약 채널 · 캘린더 · 운영</span>
+        <div class="maps">
+          <div class="map-row">
+            <div class="chips"><span class="tok src">#__momentum</span><span class="tok src">#__biz</span><span class="tok src">#__product</span><span class="tok src">#__rd</span><span class="tok src">Google Calendar</span></div>
+            <div class="chips"><span class="to">→</span><span class="tok cls">CalendarEvent</span><span class="tok cls">Narrative</span><span class="tok cls">OperationIssue</span></div>
+          </div>
+          <p class="note">채널 62개를 일일이 훑는 대신, 회사 차원의 논의가 모이는 요약 채널 네 곳이 좋은 출발점이 됩니다. 운영(HR·법무)은 권한이 닿는 공개 범위만 다룹니다.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="umb" style="margin-top:26px">
+      <span class="tag external">External</span>
+      <p>업계에서 벌어지는 일입니다. 핵심은 이미 돌아가고 있는 경쟁사 인텔리전스 파이프라인과 연결하는 것이지, 새로 만드는 게 아닙니다.</p>
+    </div>
+
+    <div class="card ext-c">
+      <h3>경쟁사 Benchmark 파이프라인 <span class="tok">기존 자동화</span></h3>
+      <span class="role">주간 리포트 W14–W28 축적 · 온톨로지가 그 결과물을 받아 온다</span>
+      <div class="pipe">
+        <span class="node">RSS · X · WebSearch · 슬랙 뉴스</span><span class="sep">→</span>
+        <span class="node">리서처 A–D 병렬</span><span class="sep">→</span>
+        <span class="node">Benchmark DB (32개사)</span><span class="sep">→</span>
+        <span class="node">내부 맥락 · 중요도 평가 (1–5점)</span><span class="sep">→</span>
+        <span class="node">In-N-Out 주간 리포트</span>
+      </div>
+      <div class="maps" style="margin-top:14px">
+        <div class="map-row">
+          <div class="map-lbl" style="font-size:.8rem;color:var(--ink-soft);font-weight:600">여기에 더해, 직접 살피는 외부 원천</div>
+          <div class="chips"><span class="tok src">경쟁사 웹사이트</span><span class="tok src">arXiv · 학회</span><span class="tok src">GitHub (RLWRLD org)</span></div>
+          <div class="chips"><span class="to" style="color:var(--logic)">→</span><span class="tok ext">Competitor</span><span class="tok ext">NewsItem</span><span class="tok ext">Publication</span><span class="tok ext">TechArea</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <b>출처와 신선도.</b> 사내에서 왔든 업계에서 왔든, 모든 데이터는 세 가지를 반드시 함께 답니다.
+      <span class="tok">sourcedFrom</span> — 어느 채널·문서·리포트에서 왔는가.
+      <span class="tok">lastConfirmedAt</span> — 마지막으로 확인한 시점.
+      <span class="tok">confidence</span> — 확인된 사실인지 추정인지. 이 세 가지가 "최신 문서에 더 무게를 두기"와 "데이터 품질 관리"를 떠받치는 토대입니다.
+    </div>
+  </section>
+
+  <!-- SCHEMA / FIELDS -->
+  <section>
+    <div class="sec-head">
+      <span class="eyebrow">축 1 · Data 상세</span>
+      <h2>각 데이터는 어떤 필드로 이루어지는가</h2>
+      <p class="note">클래스마다 두 종류의 필드를 가집니다. 그 자체의 값을 담는 <b>데이터 속성</b>과, 다른 클래스를 가리키는 <b>관계</b>입니다. 관계 앞에는 화살표(→)를 붙였습니다. 여기에 더해, 모든 클래스가 아래 공통 세 필드를 함께 답니다.</p>
+    </div>
+
+    <div class="schema-grid">
+      <div class="scard prov">
+        <div class="ch"><span class="cn">_provenance</span><span class="br">모든 클래스 공통</span></div>
+        <div class="role2">데이터의 출처와 신뢰도를 항상 함께 기록합니다.</div>
+        <div class="fl">
+          <div class="fr"><span class="fn">sourcedFrom</span><span class="ft">→ DataSource · 다수 · 필수</span></div>
+          <div class="fr"><span class="fn">lastConfirmedAt</span><span class="ft">날짜 · 필수</span></div>
+          <div class="fr"><span class="fn">confidence</span><span class="ft"><span class="en">확인 / 추정</span></span></div>
+        </div>
+      </div>
+
+      <!-- Business -->
+      <div class="scard">
+        <div class="ch"><span class="cn">Account</span><span class="br">▸ Organization · 고객·시장 도메인</span></div>
+        <div class="role2">고객·수요 기업. 노션 (Root) 페이지와 1:1로 대응합니다. 파트너·투자자는 Account가 아니라 Organization·Investor로 따로 둡니다.</div>
+        <div class="flh">데이터 속성</div>
+        <div class="fl">
+          <div class="fr"><span class="fn">region</span><span class="ft"><span class="en">KR / JP / US / CN / EU</span></span></div>
+          <div class="fr"><span class="fn">accountType</span><span class="ft"><span class="en">고객 / 수요기업 / SI파트너 …</span></span></div>
+          <div class="fr"><span class="fn">physicalAIInterest</span><span class="ft"><span class="en">높음_외부표출 / 논의중 …</span></span></div>
+        </div>
+        <div class="flh">관계</div>
+        <div class="fl">
+          <div class="fr rel"><span class="fn">→ hasDeal</span><span class="ft">Deal · 다수</span></div>
+          <div class="fr rel"><span class="fn">→ ownedBy</span><span class="ft">Person · 1</span></div>
+          <div class="fr rel"><span class="fn">→ discussedIn</span><span class="ft">DataSource · 다수</span></div>
+        </div>
+        <div class="ex"><b>예</b> · account-cj-logistics · KR · 고객</div>
+      </div>
+
+      <div class="scard">
+        <div class="ch"><span class="cn">Deal</span></div>
+        <div class="role2">회사×상품 단위의 개별 딜. 단계·금액·정체를 추적하는 기본 단위입니다.</div>
+        <div class="flh">데이터 속성</div>
+        <div class="fl">
+          <div class="fr"><span class="fn">stage</span><span class="ft"><span class="en">탐색→제안→계약→Live … 9단계</span></span></div>
+          <div class="fr"><span class="fn">pricing</span><span class="ft">숫자 · 원</span></div>
+          <div class="fr"><span class="fn">bottleneck</span><span class="ft">서술</span></div>
+          <div class="fr"><span class="fn">lastActivityAt</span><span class="ft">날짜 · 정체 판정 기준</span></div>
+          <div class="fr"><span class="fn">statusHistory</span><span class="ft">이력 · 주간 변경 추적</span></div>
+        </div>
+        <div class="flh">관계</div>
+        <div class="fl">
+          <div class="fr rel"><span class="fn">→ account</span><span class="ft">Account · 1 · 필수</span></div>
+          <div class="fr rel"><span class="fn">→ businessUnit</span><span class="ft">BusinessUnit · 1 · 필수</span></div>
+          <div class="fr rel"><span class="fn">→ useCase</span><span class="ft">UseCase · 다수</span></div>
+        </div>
+        <div class="ex"><b>예</b> · deal-cjl-rx · Proposal · 4.5억 · 75%</div>
+      </div>
+
+      <div class="scard">
+        <div class="ch"><span class="cn">NationalProject</span></div>
+        <div class="role2">정부 국책과제. 수요조사부터 종료까지 lifecycle로 관리합니다.</div>
+        <div class="flh">데이터 속성</div>
+        <div class="fl">
+          <div class="fr"><span class="fn">lifecycle</span><span class="ft"><span class="en">수요조사 / 제안 / 제출 / 진행중 …</span></span></div>
+          <div class="fr"><span class="fn">agency</span><span class="ft">주관 부처·기관</span></div>
+          <div class="fr"><span class="fn">budget</span><span class="ft">규모</span></div>
+          <div class="fr"><span class="fn">nextMilestone</span><span class="ft">다음 마일스톤</span></div>
+        </div>
+        <div class="flh">관계</div>
+        <div class="fl">
+          <div class="fr rel"><span class="fn">→ consortium</span><span class="ft">Organization · 다수</span></div>
+          <div class="fr rel"><span class="fn">→ rootPage</span><span class="ft">NotionPage · 1</span></div>
+        </div>
+        <div class="ex"><b>예</b> · natl-gitcc-max · 제안 · 100억 · ~7/15</div>
+      </div>
+
+      <div class="scard">
+        <div class="ch"><span class="cn">Partnership</span></div>
+        <div class="role2">전략 파트너십(HW·데이터·빅테크·SI·투자연계).</div>
+        <div class="flh">데이터 속성</div>
+        <div class="fl">
+          <div class="fr"><span class="fn">partnershipType</span><span class="ft"><span class="en">HW / Data / BigTech / SI …</span></span></div>
+          <div class="fr"><span class="fn">status</span><span class="ft">딜 단계 공유</span></div>
+        </div>
+        <div class="flh">관계</div>
+        <div class="fl">
+          <div class="fr rel"><span class="fn">→ partner</span><span class="ft">Organization · 1</span></div>
+          <div class="fr rel"><span class="fn">→ relatedBusinessUnit</span><span class="ft">BusinessUnit · 다수</span></div>
+        </div>
+        <div class="ex"><b>예</b> · partnership-nvidia · BigTech · 논의</div>
+      </div>
+
+      <!-- Tech -->
+      <div class="scard">
+        <div class="ch"><span class="cn">VirtualLab</span><span class="br">▸ OrganizationalUnit</span></div>
+        <div class="role2">외부 교수 협업 연구실 6곳.</div>
+        <div class="flh">데이터 속성</div>
+        <div class="fl">
+          <div class="fr"><span class="fn">university</span><span class="ft">소속 대학</span></div>
+          <div class="fr"><span class="fn">labCode</span><span class="ft"><span class="en">SJW_ALINLAB …</span></span></div>
+          <div class="fr"><span class="fn">researchFocus</span><span class="ft">연구 주제</span></div>
+        </div>
+        <div class="flh">관계</div>
+        <div class="fl">
+          <div class="fr rel"><span class="fn">→ professor</span><span class="ft">Professor · 1</span></div>
+          <div class="fr rel"><span class="fn">→ collaboratesWith</span><span class="ft">TaskGroup · 다수</span></div>
+        </div>
+        <div class="ex"><b>예</b> · vlab-sjw-alinlab · KAIST · 신진우</div>
+      </div>
+
+      <div class="scard">
+        <div class="ch"><span class="cn">ResearchProject</span></div>
+        <div class="role2">내부·가상랩 연구 과제. 슬랙 연구 서브그룹 채널과 대응합니다.</div>
+        <div class="flh">데이터 속성</div>
+        <div class="fl">
+          <div class="fr"><span class="fn">status</span><span class="ft"><span class="en">계획 / 진행중 / 보류 / 완료</span></span></div>
+          <div class="fr"><span class="fn">goal</span><span class="ft">목표</span></div>
+          <div class="fr"><span class="fn">statusHistory</span><span class="ft">방향 변경 추적</span></div>
+        </div>
+        <div class="flh">관계</div>
+        <div class="fl">
+          <div class="fr rel"><span class="fn">→ ledBy</span><span class="ft">Person · 1</span></div>
+          <div class="fr rel"><span class="fn">→ producesDataset</span><span class="ft">Dataset · 다수</span></div>
+          <div class="fr rel"><span class="fn">→ mainChannel</span><span class="ft">SlackChannel · 1</span></div>
+        </div>
+        <div class="ex"><b>예</b> · rp-long-horizon-modular · 진행중</div>
+      </div>
+
+      <div class="scard">
+        <div class="ch"><span class="cn">Product</span></div>
+        <div class="role2">제품·제품화 자산(RRC, RLDX, Dex Bench 등).</div>
+        <div class="flh">데이터 속성</div>
+        <div class="fl">
+          <div class="fr"><span class="fn">stage</span><span class="ft"><span class="en">프로토타입 → 출시 → 운영</span></span></div>
+          <div class="fr"><span class="fn">roadmapNote</span><span class="ft">로드맵</span></div>
+        </div>
+        <div class="flh">관계</div>
+        <div class="fl">
+          <div class="fr rel"><span class="fn">→ basedOnModel</span><span class="ft">Model · 다수</span></div>
+          <div class="fr rel"><span class="fn">→ usesHardware</span><span class="ft">Hardware · 다수</span></div>
+        </div>
+        <div class="ex"><b>예</b> · product-rrc · 출시 (표준 로봇 플랫폼)</div>
+      </div>
+
+      <!-- Comms -->
+      <div class="scard">
+        <div class="ch"><span class="cn">Narrative</span></div>
+        <div class="role2">투자자·고객·내부용 핵심 메시지 체계. 주간 변화를 추적합니다.</div>
+        <div class="flh">데이터 속성</div>
+        <div class="fl">
+          <div class="fr"><span class="fn">narrativeType</span><span class="ft"><span class="en">tech / biz</span></span></div>
+          <div class="fr"><span class="fn">audience</span><span class="ft"><span class="en">투자자 / 고객 / 내부 / 언론</span></span></div>
+          <div class="fr"><span class="fn">keyMessages</span><span class="ft">메시지 목록</span></div>
+          <div class="fr"><span class="fn">updatedAt</span><span class="ft">갱신일</span></div>
+        </div>
+        <div class="flh">관계</div>
+        <div class="fl">
+          <div class="fr rel"><span class="fn">→ backedBy</span><span class="ft">DataSource · 다수</span></div>
+          <div class="fr rel"><span class="fn">→ spokenBy</span><span class="ft">Person · 다수</span></div>
+        </div>
+      </div>
+
+      <div class="scard">
+        <div class="ch"><span class="cn">MeetingNote</span><span class="br">▸ DataSource · 큐레이션 77건</span></div>
+        <div class="role2">회의록(노션·구글, Meet/Zoom 스크립트, 인터뷰 노트). 외부/전략 45 + 내부 모델·연구 32건. 전사율 vlab 18%.</div>
+        <div class="flh">데이터 속성</div>
+        <div class="fl">
+          <div class="fr"><span class="fn">date</span><span class="ft">날짜</span></div>
+          <div class="fr"><span class="fn">meetingType</span><span class="ft"><span class="en">internal / 고객 / 투자자 …</span></span></div>
+          <div class="fr"><span class="fn">hasTranscript</span><span class="ft">스크립트 유무 (참·거짓)</span></div>
+        </div>
+        <div class="flh">관계</div>
+        <div class="fl">
+          <div class="fr rel"><span class="fn">→ attendees</span><span class="ft">Person · 다수</span></div>
+          <div class="fr rel"><span class="fn">→ relatedTo</span><span class="ft">Account·Deal 등</span></div>
+        </div>
+      </div>
+
+      <!-- External -->
+      <div class="scard ext">
+        <div class="ch"><span class="cn">Competitor</span><span class="br">▸ Organization</span></div>
+        <div class="role2">경쟁·생태계 업체. 유형과 주시 강도로 나눠 관리합니다.</div>
+        <div class="flh">데이터 속성</div>
+        <div class="fl">
+          <div class="fr"><span class="fn">competitorType</span><span class="ft"><span class="en">RFM / 풀스택 / HW+Dep … 9종</span></span></div>
+          <div class="fr"><span class="fn">priorityLevel</span><span class="ft"><span class="en">P0 / P1 / P2</span></span></div>
+          <div class="fr"><span class="fn">keyMessage</span><span class="ft">대외 핵심 메시지</span></div>
+          <div class="fr"><span class="fn">modelArchitectureNote</span><span class="ft">모델 구조 특징</span></div>
+        </div>
+        <div class="flh">관계</div>
+        <div class="fl">
+          <div class="fr rel"><span class="fn">→ competesWith</span><span class="ft">BusinessUnit · 다수</span></div>
+          <div class="fr rel"><span class="fn">→ mentionedIn</span><span class="ft">DataSource · 신규 편입 감지</span></div>
+        </div>
+        <div class="ex"><b>예</b> · comp-genesis-ai · RFM · P1 · 20자유도 핸드</div>
+      </div>
+
+      <div class="scard ext">
+        <div class="ch"><span class="cn">NewsItem</span></div>
+        <div class="role2">외부 뉴스·발표·투자 소식 한 건. 우리 관점의 시사점을 함께 답니다.</div>
+        <div class="flh">데이터 속성</div>
+        <div class="fl">
+          <div class="fr"><span class="fn">date</span><span class="ft">날짜</span></div>
+          <div class="fr"><span class="fn">newsType</span><span class="ft"><span class="en">제품발표 / 논문 / 투자유치 …</span></span></div>
+          <div class="fr"><span class="fn">implication</span><span class="ft">우리 전략 시사점</span></div>
+        </div>
+        <div class="flh">관계</div>
+        <div class="fl">
+          <div class="fr rel"><span class="fn">→ about</span><span class="ft">Organization · 다수</span></div>
+          <div class="fr rel"><span class="fn">→ relatedTechArea</span><span class="ft">TechArea · 다수</span></div>
+        </div>
+      </div>
+
+      <!-- Strategy outputs -->
+      <div class="scard str">
+        <div class="ch"><span class="cn">ActionItem</span></div>
+        <div class="role2">도출된 실행 항목. CBO 개인 우선순위도 여기에 담깁니다.</div>
+        <div class="flh">데이터 속성</div>
+        <div class="fl">
+          <div class="fr"><span class="fn">priority</span><span class="ft"><span class="en">P0 / P1 / P2</span></span></div>
+          <div class="fr"><span class="fn">status</span><span class="ft"><span class="en">제안됨 / 진행중 / 완료 …</span></span></div>
+          <div class="fr"><span class="fn">isCBOPersonal</span><span class="ft">CBO 개인 항목 (참·거짓)</span></div>
+        </div>
+        <div class="flh">관계</div>
+        <div class="fl">
+          <div class="fr rel"><span class="fn">→ owner</span><span class="ft">Person · 1</span></div>
+          <div class="fr rel"><span class="fn">→ derivedFrom</span><span class="ft">근거 (뉴스·회의록 등)</span></div>
+        </div>
+      </div>
+
+      <div class="scard str">
+        <div class="ch"><span class="cn">AlignmentTopic</span></div>
+        <div class="role2">부서 간·전사·가상랩↔제품팀 사이에서 맞춰야 할 영역.</div>
+        <div class="flh">데이터 속성</div>
+        <div class="fl">
+          <div class="fr"><span class="fn">alignmentType</span><span class="ft"><span class="en">부서간 / 전사 / VLab-Product …</span></span></div>
+          <div class="fr"><span class="fn">gapDescription</span><span class="ft">격차 설명</span></div>
+          <div class="fr"><span class="fn">status</span><span class="ft">진행 상태</span></div>
+        </div>
+        <div class="flh">관계</div>
+        <div class="fl">
+          <div class="fr rel"><span class="fn">→ betweenUnits</span><span class="ft">OrganizationalUnit · 다수</span></div>
+          <div class="fr rel"><span class="fn">→ resolvedBy</span><span class="ft">ActionItem · 다수</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="restbox">
+      <div class="flh">여기 그리지 않은 나머지 클래스 (같은 방식으로 구성)</div>
+      <div class="chips">
+        <span class="tok cls">Model</span><span class="tok cls">Dataset</span><span class="tok cls">Hardware</span><span class="tok cls">TechArea</span>
+        <span class="tok cls">SlackChannel</span><span class="tok cls">NotionPage</span><span class="tok cls">CalendarEvent</span><span class="tok cls">Deck</span>
+        <span class="tok cls">Demo</span><span class="tok cls">UseCase</span><span class="tok cls">Industry</span>
+        <span class="tok cls">Person</span><span class="tok cls">Professor</span><span class="tok cls">OrganizationalUnit</span><span class="tok cls">TaskGroup</span><span class="tok cls">BusinessUnit</span>
+        <span class="tok ext">Investor</span><span class="tok ext">Publication</span><span class="tok ext">ExternalSource</span>
+        <span class="tok cls">PREvent</span><span class="tok cls">OperationIssue</span><span class="tok cls">RecruitingPosition</span>
+      </div>
+      <p class="note" style="margin-top:10px">파랑은 사내 데이터, 주황은 외부·경쟁 데이터입니다. 전체 스키마 원본은 로컬 <span class="tok" style="font-size:.7rem">20_schema/properties.yaml</span> 에 있습니다.</p>
+    </div>
+  </section>
+
+  <!-- LOGIC DETAIL -->
+  <section>
+    <div class="sec-head">
+      <span class="eyebrow">축 2 · Logic</span>
+      <h2>판단은 어떻게 짜여 있는가</h2>
+      <p class="note">CBO Agent 문서의 setup 11개를 온톨로지 위에서 도는 분석 로직으로 다시 정의했습니다. 여러 setup이 함께 쓰는 연산 여섯 가지를 먼저 만들고, 각 setup을 "입력 클래스·관계 → 판단 → 산출 클래스"로 조립합니다.</p>
+    </div>
+
+    <h3 style="margin-bottom:12px">함께 쓰는 연산 여섯 가지</h3>
+    <div class="prims">
+      <div class="prim"><div class="name">주간 diff</div><div class="desc">지난주와 견주어 바뀐 단계·속성을 뽑아냄</div><div class="chips flds"><span class="tok">statusHistory</span></div></div>
+      <div class="prim"><div class="name">정체 감지</div><div class="desc">마지막 접촉이 21일을 넘고 아직 끝나지 않은 딜</div><div class="chips flds"><span class="tok">lastActivityAt</span><span class="tok">stage</span></div></div>
+      <div class="prim"><div class="name">관심 하이라이트</div><div class="desc">Physical AI 관심을 밖으로 드러낸 고객만 추림</div><div class="chips flds"><span class="tok">physicalAIInterest</span></div></div>
+      <div class="prim"><div class="name">신규 편입</div><div class="desc">사내에서 새로 언급되기 시작한 업체를 포착</div><div class="chips flds"><span class="tok">mentionedIn</span></div></div>
+      <div class="prim"><div class="name">격차 분석</div><div class="desc">우리 내부 진행과 외부 동향을 맞대어 봄</div><div class="chips flds"><span class="tok">전 도메인</span></div></div>
+      <div class="prim"><div class="name">신선도 랭크</div><div class="desc">최신 문서·C-level 작성 문서에 무게를 줘 정렬</div><div class="chips flds"><span class="tok">_provenance</span></div></div>
+    </div>
+
+    <h3 style="margin:28px 0 10px">Agent setup을 온톨로지 로직으로</h3>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Setup</th><th>입력 (클래스 · 관계)</th><th>판단</th><th>산출</th></tr></thead>
+        <tbody>
+          <tr><td>1 · 원천 유형화</td><td>DataSource 전체</td><td>원천 분류 · 신선도 랭크</td><td>커버리지 리포트</td></tr>
+          <tr><td>2 · 기술 내러티브</td><td>Product·Model·Dataset + Deck</td><td>격차 분석</td><td>Narrative(tech)</td></tr>
+          <tr><td>3 · 비즈 내러티브</td><td>Deal·Account·NationalProject + Deck</td><td>격차 분석</td><td>Narrative(biz)</td></tr>
+          <tr><td>4 · 경쟁 인텔 <span class="tok" style="font-size:.66rem">파이프라인</span></td><td>Competitor + 파이프라인 결과물</td><td>신규 편입 · 중요도 흡수</td><td>Competitor·NewsItem</td></tr>
+          <tr><td>5 · 연관 기술 <span class="tok" style="font-size:.66rem">파이프라인</span></td><td>TechArea (focusLevel)</td><td>관심 영역 확장</td><td>TechArea·NewsItem</td></tr>
+          <tr><td>6 · 주요 경쟁사 기술</td><td>Competitor(P0) + Model 비교</td><td>모델 구조 대조 (Dexterity)</td><td>기술 비교 내러티브</td></tr>
+          <tr><td>7 · 내부↔외부 전략</td><td>전 도메인 (competesWith)</td><td>종합 격차 분석</td><td>AlignmentTopic·ActionItem</td></tr>
+          <tr><td>8 · 이메일·캘린더</td><td>CalendarEvent·MeetingNote</td><td>아젠다 불명확·회의록 커버리지</td><td>데일리 브리핑·ActionItem</td></tr>
+          <tr><td>9 · 노션·슬랙 활성화</td><td>SlackChannel.activityLevel</td><td>기여·소비 정량화</td><td>활성화 리포트</td></tr>
+          <tr><td>10 · 추가 Agent 제안</td><td>답 못 한 역량질문</td><td>공백 식별</td><td>새 setup 제안</td></tr>
+          <tr><td>11 · 통합 제언</td><td>setup 1–10 결과물</td><td>거버넌스</td><td>업그레이드 로드맵</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ACTION DETAIL -->
+  <section>
+    <div class="sec-head">
+      <span class="eyebrow">축 3 · Action</span>
+      <h2>판단은 어떤 행동으로 이어지는가</h2>
+      <p class="note">로직이 내린 판단을 현실로 옮기는 행동입니다. 채널·주기·형식을 미리 정해 두고, 밖으로 나가는 행동은 승인을 거치게 했습니다.</p>
+    </div>
+    <div class="acts">
+      <div class="act"><h4>주간 비즈 파이프라인 브리핑</h4><p class="meta">슬랙·노션 · 매주 · 정체·신규·리뷰 대상 하이라이트</p><span class="badge appr">게시는 승인</span></div>
+      <div class="act"><h4>경쟁 인텔 리포트</h4><p class="meta">기존 In-N-Out 주간 리포트에 연동 · 매주</p><span class="badge appr">기존 워크플로우</span></div>
+      <div class="act"><h4>데일리 캘린더 브리핑</h4><p class="meta">개인 · 매일 · 아젠다·참석자·불명확 미팅</p><span class="badge free">개인용 · 자유</span></div>
+      <div class="act"><h4>전략 인사이트 메모</h4><p class="meta">노션 · 매월 · AlignmentTopic + ActionItem</p><span class="badge free">초안은 자유</span></div>
+      <div class="act"><h4>내러티브 초안 (한·영)</h4><p class="meta">노션·로컬 · 매월 · 덱 격차 + 뒷받침 자료</p><span class="badge free">초안은 자유</span></div>
+      <div class="act"><h4>ActionItem 추적</h4><p class="meta">노션 · 상시 · 담당·우선순위·기한</p><span class="badge free">자유</span></div>
+    </div>
+
+    <div class="boundary">
+      <h4>승인 경계</h4>
+      <div class="row"><span class="k free">자유</span><span>읽기 · 분석 · 로컬 초안 · 노션 개인 페이지 초안</span></div>
+      <div class="row"><span class="k appr">승인</span><span>슬랙·노션 게시 · 캘린더 초대 · 이메일 발신 · 자동 스케줄 설정</span></div>
+    </div>
+    <div class="callout" style="background:var(--action-soft);border-color:var(--action-line)">
+      <b style="color:var(--action)">자동화 1호</b> — 주간 비즈 파이프라인 브리핑. 딜 46건을 실측해 둔 덕에 "이번 주 볼 딜 · 정체된 어카운트 · 단계 변경"을 온톨로지에서 곧바로 뽑아냅니다. 슬랙에 올릴 채널만 정하면 바로 돌아갑니다.
+    </div>
+  </section>
+
+  <!-- WORKED EXAMPLE -->
+  <section>
+    <div class="sec-head">
+      <span class="eyebrow">끝까지 흐르는 길 · 예시</span>
+      <h2>"정체된 어카운트" 하나가 세 축을 지나는 길</h2>
+      <p class="note">추상적인 연결이 실제로 어떻게 작동하는지, 신호 하나를 원천부터 행동까지 따라가 봅니다.</p>
+    </div>
+    <div class="trace">
+      <div class="step d">
+        <div class="mk">D</div>
+        <div class="body">
+          <h4>원천 — SI Progress DB</h4>
+          <p>LGE_RX 행에 마지막 접촉일이 2025-07-28, 단계가 Uncertain으로 적혀 있습니다.</p>
+          <span class="k2">notion-search + fetch → Deal 인스턴스</span>
+        </div>
+      </div>
+      <div class="step o">
+        <div class="mk">O</div>
+        <div class="body">
+          <h4>온톨로지 — 인스턴스로 옮겨 담기</h4>
+          <p>이 값들이 deal-lge-rx 인스턴스의 단계·마지막 접촉일·출처·확인 시점 필드로 들어갑니다.</p>
+          <span class="k2">Deal.lastActivityAt = 2025-07-28 · stage = Uncertain</span>
+        </div>
+      </div>
+      <div class="step l">
+        <div class="mk">L</div>
+        <div class="body">
+          <h4>로직 — 정체 감지 연산</h4>
+          <p>마지막 접촉이 21일을 훌쩍 넘겼고 아직 끝난 딜이 아니어서, "정체된 어카운트" 후보로 표시됩니다.</p>
+          <span class="k2">정체 감지 → Setup 3·8이 가져다 씀</span>
+        </div>
+      </div>
+      <div class="step a">
+        <div class="mk">A</div>
+        <div class="body">
+          <h4>행동 — 주간 브리핑의 경보 항목</h4>
+          <p>"⚠️ 정체된 어카운트"에 LGE의 세 개 딜이 자동으로 올라오고, CBO가 다시 연락할지 판단합니다.</p>
+          <span class="k2">주간 비즈 브리핑 (승인 후 슬랙 게시)</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap" style="padding:0">
+      RLWRLD Business Digital Twin Ontology · Data–Logic–Action 구조 설명 · 2026-07-15 ·
+      로컬 마스터 <span class="tok" style="font-size:.7rem">20_schema/</span> <span class="tok" style="font-size:.7rem">30_instances/</span> <span class="tok" style="font-size:.7rem">40_dla-mapping/</span> 와 노션 미러
+    </div>
+  </footer>
+
+</div>

@@ -1,0 +1,353 @@
+<title>RLWRLD Ontology — 프로젝트 개요</title>
+<style>
+  :root{
+    --bg:#f5f7fa; --surface:#ffffff; --surface-2:#eef1f6; --surface-3:#e5eaf1;
+    --ink:#141d2b; --ink-soft:#54627a; --ink-faint:#8b98ad; --line:#d6dce6;
+    --accent:#245fd0;
+    --font-sans:-apple-system,BlinkMacSystemFont,"Segoe UI","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+    --font-mono:ui-monospace,"SF Mono","Menlo","Consolas",monospace;
+    --d-business:#3b74e8; --d-tech:#12a69c; --d-ecosystem:#e07b2f; --d-market:#c65ca0;
+    --d-comms:#8b62d6; --d-ops:#6f7d90; --d-sources:#3fa45f; --d-strategy:#db4b4b; --d-org:#c99a1e;
+    --shadow:0 1px 2px rgba(20,29,43,.06),0 6px 20px rgba(20,29,43,.05);
+    --maxw:1000px;
+  }
+  @media (prefers-color-scheme:dark){:root{
+    --bg:#0c1119; --surface:#141c27; --surface-2:#1b2430; --surface-3:#232f3d;
+    --ink:#e9eef5; --ink-soft:#97a5ba; --ink-faint:#6a788d; --line:#28323f; --accent:#6fa4ff;
+    --d-business:#5b90ff; --d-tech:#33c2b8; --d-ecosystem:#f0965a; --d-market:#e07bbd;
+    --d-comms:#a684ee; --d-ops:#8b99ac; --d-sources:#54c47c; --d-strategy:#f16a6a; --d-org:#e6bd4a;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.35);
+  }}
+  :root[data-theme="light"]{
+    --bg:#f5f7fa;--surface:#ffffff;--surface-2:#eef1f6;--surface-3:#e5eaf1;--ink:#141d2b;--ink-soft:#54627a;
+    --ink-faint:#8b98ad;--line:#d6dce6;--accent:#245fd0;
+    --d-business:#3b74e8;--d-tech:#12a69c;--d-ecosystem:#e07b2f;--d-market:#c65ca0;
+    --d-comms:#8b62d6;--d-ops:#6f7d90;--d-sources:#3fa45f;--d-strategy:#db4b4b;--d-org:#c99a1e;
+  }
+  :root[data-theme="dark"]{
+    --bg:#0c1119;--surface:#141c27;--surface-2:#1b2430;--surface-3:#232f3d;--ink:#e9eef5;--ink-soft:#97a5ba;
+    --ink-faint:#6a788d;--line:#28323f;--accent:#6fa4ff;
+    --d-business:#5b90ff;--d-tech:#33c2b8;--d-ecosystem:#f0965a;--d-market:#e07bbd;
+    --d-comms:#a684ee;--d-ops:#8b99ac;--d-sources:#54c47c;--d-strategy:#f16a6a;--d-org:#e6bd4a;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-sans);line-height:1.65;
+    font-size:16px;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+  section{padding:42px 0;border-top:1px solid var(--line)}
+  section:first-of-type{border-top:none}
+  h1,h2,h3{letter-spacing:-.02em;line-height:1.25;margin:0;text-wrap:balance}
+  h1{font-size:clamp(1.9rem,4.6vw,2.9rem);font-weight:780}
+  h2{font-size:clamp(1.3rem,3vw,1.8rem);font-weight:760;margin-bottom:6px}
+  p{margin:0}
+  .lede{color:var(--ink-soft);font-size:1.08rem;max-width:64ch}
+  .eyebrow{font-family:var(--font-mono);font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--ink-faint);font-weight:600;display:block;margin-bottom:10px}
+  .note{color:var(--ink-soft);font-size:.93rem;max-width:68ch}
+  .sec-head{margin-bottom:24px}
+  .tok{font-family:var(--font-mono);font-size:.78rem;padding:2px 7px;border-radius:5px;
+    background:var(--surface-2);border:1px solid var(--line);white-space:nowrap;display:inline-block}
+  a{color:var(--accent)}
+
+  .hero{padding:54px 0 38px}
+  .kicker{font-family:var(--font-mono);font-size:.8rem;letter-spacing:.12em;color:var(--ink-faint);margin-bottom:16px}
+  .hero h1{margin-bottom:16px}
+  .status{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+  .chip{font-size:.82rem;padding:6px 12px;border-radius:8px;background:var(--surface);border:1px solid var(--line);
+    box-shadow:var(--shadow);color:var(--ink-soft)}
+  .chip b{color:var(--ink);font-weight:680}
+
+  /* phase stepper */
+  .phases{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+  @media(max-width:760px){.phases{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:440px){.phases{grid-template-columns:1fr}}
+  .ph{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 15px;box-shadow:var(--shadow)}
+  .ph .n{font-family:var(--font-mono);font-size:.7rem;color:var(--accent);font-weight:700;letter-spacing:.05em}
+  .ph h3{font-size:.98rem;margin:3px 0 5px}
+  .ph p{font-size:.82rem;color:var(--ink-soft)}
+  .ph .done{font-family:var(--font-mono);font-size:.62rem;color:var(--d-sources);margin-top:8px;display:block}
+
+  /* file tree */
+  .tree{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 20px;box-shadow:var(--shadow);
+    overflow-x:auto}
+  .tree pre{margin:0;font-family:var(--font-mono);font-size:.82rem;line-height:1.75;color:var(--ink);white-space:pre}
+  .tree .c{color:var(--ink-faint)}
+  .tree .y{color:var(--d-tech)}
+  .tree .m{color:var(--ink-soft)}
+  .store-note{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px}
+  @media(max-width:680px){.store-note{grid-template-columns:1fr}}
+  .sn{background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+  .sn h4{margin:0 0 4px;font-size:.86rem}
+  .sn p{font-size:.8rem;color:var(--ink-soft)}
+  .sn .fmt{font-family:var(--font-mono);font-size:.68rem;color:var(--accent);font-weight:700}
+
+  /* class reference */
+  .dom{margin-top:20px;border:1px solid var(--line);border-radius:13px;background:var(--surface);box-shadow:var(--shadow);overflow:hidden}
+  .dom summary{list-style:none;cursor:pointer;padding:14px 17px;display:flex;align-items:center;gap:10px}
+  .dom summary::-webkit-details-marker{display:none}
+  .dom .bar{width:5px;align-self:stretch;border-radius:3px;flex:none}
+  .dom .dh{font-weight:720;font-size:1.02rem}
+  .dom .dc{margin-left:auto;font-family:var(--font-mono);font-size:.7rem;color:var(--ink-faint)}
+  .dom .caret{color:var(--ink-faint);transition:transform .15s}
+  .dom[open] .caret{transform:rotate(90deg)}
+  .clist{padding:2px 17px 15px;display:flex;flex-direction:column;gap:0}
+  .cl{display:grid;grid-template-columns:180px 1fr;gap:14px;padding:8px 0;border-top:1px solid var(--surface-2);align-items:baseline}
+  @media(max-width:600px){.cl{grid-template-columns:1fr;gap:2px}}
+  .cl:first-child{border-top:none}
+  .cl .cn{font-family:var(--font-mono);font-size:.82rem;font-weight:600}
+  .cl .cd{font-size:.85rem;color:var(--ink-soft)}
+  .cl .cd .k{font-family:var(--font-mono);font-size:.76rem;color:var(--ink-faint)}
+
+  .callout{background:var(--surface-2);border:1px solid var(--line);border-left:3px solid var(--d-market);
+    border-radius:11px;padding:14px 17px;margin:18px 0;font-size:.9rem}
+  .callout b{color:var(--d-market)}
+
+  /* future */
+  .fut{display:flex;flex-direction:column;gap:14px}
+  .fcard{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 18px;box-shadow:var(--shadow)}
+  .fcard h3{font-size:1.02rem;display:flex;align-items:center;gap:9px;margin-bottom:8px}
+  .fcard .fi{width:9px;height:9px;border-radius:50%;flex:none}
+  .fcard ul{margin:0;padding-left:0;list-style:none;display:flex;flex-direction:column;gap:7px}
+  .fcard li{font-size:.88rem;color:var(--ink);display:flex;gap:9px;align-items:baseline}
+  .fcard li::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--ink-faint);flex:none;margin-top:8px}
+  .fcard li .lb{color:var(--ink-soft)}
+  .deliv{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:4px}
+  @media(max-width:680px){.deliv{grid-template-columns:1fr}}
+  .dv{background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:11px 13px}
+  .dv h4{margin:0 0 3px;font-size:.9rem}
+  .dv p{font-size:.79rem;color:var(--ink-soft)}
+  .dv .st{font-family:var(--font-mono);font-size:.62rem;padding:1px 6px;border-radius:4px;margin-top:7px;display:inline-block;font-weight:600}
+  .st.ready{background:color-mix(in srgb,var(--d-sources) 18%,transparent);color:var(--d-sources)}
+  .st.soon{background:color-mix(in srgb,var(--d-ecosystem) 18%,transparent);color:var(--d-ecosystem)}
+
+  footer{padding:28px 0 48px;border-top:1px solid var(--line);color:var(--ink-faint);font-size:.82rem}
+  .links{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
+  .links a{font-size:.85rem;text-decoration:none;background:var(--surface);border:1px solid var(--line);
+    border-radius:8px;padding:6px 12px;box-shadow:var(--shadow)}
+</style>
+
+<div class="wrap">
+
+  <header class="hero">
+    <div class="kicker">RLWRLD · Business Digital Twin Ontology</div>
+    <h1>회사가 돌아가는 방식을, 그대로 데이터로</h1>
+    <p class="lede">리얼월드의 사업·기술·고객·경쟁을 하나의 온톨로지(명사=클래스, 동사=관계)로 옮겨,
+      CBO Agent가 "지금 무슨 일이 벌어지고 있고 무엇을 챙겨야 하는지"를 스스로 읽어낼 수 있게 만드는 프로젝트입니다.</p>
+    <div class="status">
+      <span class="chip"><b>9</b> 도메인 · <b>36</b> 클래스</span>
+      <span class="chip">딜 <b>46</b> · 경쟁사 <b>33</b> · 국책 <b>17</b> · 가상랩 <b>6</b></span>
+      <span class="chip">우리 모델 <b>4</b> · 회의록 <b>77</b> · Person <b>113</b></span>
+      <span class="chip">Phase 1–4 완료 · 스키마 <b>v0.2</b></span>
+    </div>
+  </header>
+
+  <!-- WHAT WE BUILT -->
+  <section>
+    <div class="sec-head">
+      <span class="eyebrow">지금까지 · 무엇을 만들었나</span>
+      <h2>네 단계로 뼈대를 세우고 데이터를 채웠습니다</h2>
+    </div>
+    <div class="phases">
+      <div class="ph"><span class="n">PHASE 1</span><h3>범위·용어</h3><p>역량질문 46개, 슬랙 62채널·노션 구조 스캔, 용어집. 온톨로지가 답해야 할 질문을 먼저 정의.</p><span class="done">완료</span></div>
+      <div class="ph"><span class="n">PHASE 2</span><h3>스키마 설계</h3><p>9개 도메인·36개 클래스, 속성·관계·제약. 역량질문으로 검증.</p><span class="done">완료</span></div>
+      <div class="ph"><span class="n">PHASE 3</span><h3>인스턴스 채우기</h3><p>SI Progress DB에서 딜 46건 실측, 경쟁사·국책·가상랩·우리 모델·데이터소스 populate.</p><span class="done">완료</span></div>
+      <div class="ph"><span class="n">PHASE 4</span><h3>Data·Logic·Action</h3><p>원천→클래스 파이프라인, Agent setup 로직화, 주간 브리핑 자동화 1호 데모.</p><span class="done">완료</span></div>
+    </div>
+    <p class="note" style="margin-top:16px">함께 만든 것: <a href="https://claude.ai/code/artifact/093305eb-d524-455e-8994-f588abfcd400" target="_blank" rel="noopener">Data·Logic·Action 구조 설명 페이지</a>, <a href="https://claude.ai/code/artifact/e7b69b5c-b197-4626-a728-4904cf6461ab" target="_blank" rel="noopener">인터랙티브 지식 그래프</a>(스키마·인스턴스 두 뷰 + 타입 토글), 그리고 이 개요 페이지.</p>
+    <div class="callout" style="border-left-color:var(--d-tech)">
+      <b style="color:var(--d-tech)">2026-07-15 갱신.</b> 데이터 무결성 정리(중복키·깨진 참조·경쟁사 이중계수 62→33 수정), 우리 <span class="tok">Model</span> 4건 populate(G0·RLDX 1→1.1·RFM Backbone·World Model, <span class="tok">comparableTo</span>로 경쟁사와 비교축), 내부 모델·연구 회의록 32건 인스턴스화(총 77건), Person 113명. 역량질문 46개 답변 상태: ✅ 18 · 🟡 16 · 🔴 12.
+    </div>
+  </section>
+
+  <!-- STORAGE -->
+  <section>
+    <div class="sec-head">
+      <span class="eyebrow">어떻게 저장되나</span>
+      <h2>노드는 도메인별 YAML에, 설명은 마크다운에</h2>
+      <p class="note">"노드 하나 = 파일 하나"가 아닙니다. 개체는 도메인별 YAML 파일에 여러 개씩 묶여 있고(관계·쿼리에 유리), 스키마도 YAML, 사람이 읽는 문서는 마크다운, 팀 공유는 노션 미러입니다.</p>
+    </div>
+    <div class="tree"><pre>23. RLWRLD onthology/
+├─ ROADMAP.md                <span class="c"># 로드맵 · 진행 현황  (MD)</span>
+├─ 00_scope/                 <span class="c"># 스코프·역량질문·재사용·데이터 공백  (MD)</span>
+├─ 10_terminology/           <span class="c"># 용어집  (MD)</span>
+├─ 20_schema/                <span class="y"># 뼈대 — classes·properties·constraints + CQ 검증·답변집  (YAML/MD)</span>
+├─ 30_instances/             <span class="y"># 실제 노드(개체)가 사는 곳 + 무결성 리포트  (YAML/MD)</span>
+│   ├─ business/             <span class="m">accounts · deals · national-projects · decks</span>
+│   ├─ competitors/          <span class="m">competitors (enriched)</span>
+│   ├─ tech/                 <span class="m">models — 우리 모델 4건</span>
+│   ├─ sources/              <span class="m">data sources · meeting-notes</span>
+│   └─ skeleton/             <span class="m">org · tech · people(113)</span>
+├─ 40_dla-mapping/           <span class="c"># Data / Logic / Action 매핑  (MD)</span>
+└─ 90_artifacts/             <span class="c"># 이 HTML 산출물들의 로컬 소스</span>
+      + Notion 미러          <span class="c"># 팀 공유용 (CBO Agent 페이지 하위)</span></pre></div>
+    <div class="store-note">
+      <div class="sn"><span class="fmt">YAML</span><h4>개체 · 스키마</h4><p>한 파일에 여러 개체. 예: deals.yaml에 딜 46개. 관계는 개체 id로 참조.</p></div>
+      <div class="sn"><span class="fmt">Markdown</span><h4>설명 문서</h4><p>로드맵·용어집·공백·DLA 매핑·CQ 답변집처럼 사람이 읽고 논의하는 내용.</p></div>
+      <div class="sn"><span class="fmt">Notion</span><h4>팀 미러</h4><p>로컬을 원본으로 두고 팀 공유·피드백은 노션 페이지로 동기화.</p></div>
+    </div>
+  </section>
+
+  <!-- CLASS REFERENCE -->
+  <section>
+    <div class="sec-head">
+      <span class="eyebrow">클래스 레퍼런스</span>
+      <h2>9개 도메인 · 36개 클래스 (v0.2)</h2>
+      <p class="note">각 도메인을 눌러 펼치면 클래스와 설명이 나옵니다. 색은 지식 그래프와 동일합니다.</p>
+    </div>
+
+    <div class="callout">
+      <b>v0.2 변경 — 수요/공급 축 정리.</b> <span class="tok">Account</span>를 사업 → <b>고객·시장</b> 도메인으로 옮겼습니다.
+      Account는 이제 <b>고객·수요 기업만</b> 뜻하고, 파트너·투자자·컨소시엄사는 Account가 아니라
+      <span class="tok">Organization</span>·<span class="tok">Investor</span>로 따로 두어 <span class="tok">Partnership.partner</span>·<span class="tok">NationalProject.consortium</span>이 참조합니다.
+      경쟁사의 <span class="tok">competesWith</span>도 "모든 경쟁사→RD" 남발을 걷어내고, 유형(CompetitorType)이 실제로 겹치는 사업 라인에만 연결하도록 정정했습니다.
+    </div>
+
+    <details class="dom" open>
+      <summary><span class="bar" style="background:var(--d-business)"></span><span class="dh">② 사업 (business)</span><span class="dc">engagement · 5</span><span class="caret">›</span></summary>
+      <div class="clist">
+        <div class="cl"><span class="cn" style="color:var(--d-business)">BusinessUnit</span><span class="cd">사업 모델·단위. RX(전환 컨설팅)·RD(배포/PoC)·BSP(전략기획)·DATA(데이터 사업)·지역(KR/JP)</span></div>
+        <div class="cl"><span class="cn" style="color:var(--d-business)">Deal</span><span class="cd">회사×상품 단위의 개별 딜. <span class="k">stage·pricing·bottleneck·lastActivityAt</span> 추적의 기본 단위</span></div>
+        <div class="cl"><span class="cn" style="color:var(--d-business)">Partnership</span><span class="cd">전략 파트너십(HW·Data·빅테크·SI·투자연계). <span class="k">partner → Organization</span> (Account 아님)</span></div>
+        <div class="cl"><span class="cn" style="color:var(--d-business)">NationalProject</span><span class="cd">정부 국책과제. <span class="k">수요조사→제안→제출→진행중/불참</span> lifecycle로 관리</span></div>
+        <div class="cl"><span class="cn" style="color:var(--d-business)">Demo</span><span class="cd">데모·Mini PoC 단위 (Deal 이전 단계 포함)</span></div>
+      </div>
+    </details>
+
+    <details class="dom">
+      <summary><span class="bar" style="background:var(--d-market)"></span><span class="dh">⑤ 고객·시장 (market)</span><span class="dc">수요 · 3</span><span class="caret">›</span></summary>
+      <div class="clist">
+        <div class="cl"><span class="cn" style="color:var(--d-market)">Account</span><span class="cd"><b>고객·수요 기업</b> (우리 제품·서비스의 수요 주체). 노션 "(Root)" 페이지와 1:1. <span class="k">physicalAIInterest</span>로 관심 표출 추적. ※파트너·투자자 제외</span></div>
+        <div class="cl"><span class="cn" style="color:var(--d-market)">Industry</span><span class="cd">산업 분류(물류·제조·유통·항공·의료·국방 등). 고객을 산업별로 묶는 축</span></div>
+        <div class="cl"><span class="cn" style="color:var(--d-market)">UseCase</span><span class="cd">로봇 적용 use case(피킹·조립·검수 등). 산업과 데모·딜을 잇는 단위</span></div>
+      </div>
+    </details>
+
+    <details class="dom">
+      <summary><span class="bar" style="background:var(--d-tech)"></span><span class="dh">③ 기술 (tech)</span><span class="dc">6</span><span class="caret">›</span></summary>
+      <div class="clist">
+        <div class="cl"><span class="cn" style="color:var(--d-tech)">ResearchProject</span><span class="cd">내부·가상랩 연구 과제. 슬랙 연구 서브그룹 채널과 대응 (faster-vla, rfm-backbone 등)</span></div>
+        <div class="cl"><span class="cn" style="color:var(--d-tech)">Product</span><span class="cd">제품·제품화 자산. RRC(표준 로봇 플랫폼)·RLDX(플래그십 VLA)·Dex Bench·EaaS</span></div>
+        <div class="cl"><span class="cn" style="color:var(--d-tech)">Model</span><span class="cd">내부 개발 AI 모델(RFM·VLA 계열). <span class="k">4건 populate: G0·RLDX 1.1·RFM Backbone·World Model</span> · <span class="k">comparableTo → Competitor</span></span></div>
+        <div class="cl"><span class="cn" style="color:var(--d-tech)">Dataset</span><span class="cd">학습 데이터(Human·Teleop·Synthetic·Neural Trajectory). 예: HRDexDB</span></div>
+        <div class="cl"><span class="cn" style="color:var(--d-tech)">Hardware</span><span class="cd">로봇 HW(핸드·암·센서·베이스). Allex·OpenArm·RBY1·Tesollo·Wuji·Inspire</span></div>
+        <div class="cl"><span class="cn" style="color:var(--d-tech)">TechArea</span><span class="cd">기술 관심 영역(Dexterity·cloud RFM·tactile 등). <span class="k">focusLevel</span>로 워칭 강도</span></div>
+      </div>
+    </details>
+
+    <details class="dom">
+      <summary><span class="bar" style="background:var(--d-ecosystem)"></span><span class="dh">④ 경쟁·생태계 (ecosystem)</span><span class="dc">4</span><span class="caret">›</span></summary>
+      <div class="clist">
+        <div class="cl"><span class="cn" style="color:var(--d-ecosystem)">Competitor</span><span class="cd">경쟁·생태계 업체 <b>33개사</b>. <span class="k">competitorType</span>(9종)로 분류, <span class="k">priorityLevel</span>(P0~P2)로 워칭 강도, <span class="k">competesWith</span>는 겹치는 사업 라인에만</span></div>
+        <div class="cl"><span class="cn" style="color:var(--d-ecosystem)">Investor</span><span class="cd">VC·CVC·투자자(자사 투자자 + 경쟁사 백커). <b>Account가 아닌 독립 클래스</b></span></div>
+        <div class="cl"><span class="cn" style="color:var(--d-ecosystem)">NewsItem</span><span class="cd">외부 뉴스·발표·투자 소식 한 건(51건). <span class="k">implication</span>에 우리 전략 시사점</span></div>
+        <div class="cl"><span class="cn" style="color:var(--d-ecosystem)">Publication</span><span class="cd">논문·블로그·기술 문서(외부 경쟁사 + 내부 Biz paper, origin으로 구분)</span></div>
+      </div>
+    </details>
+
+    <details class="dom">
+      <summary><span class="bar" style="background:var(--d-org)"></span><span class="dh">① 조직·사람 (org)</span><span class="dc">6</span><span class="caret">›</span></summary>
+      <div class="clist">
+        <div class="cl"><span class="cn" style="color:var(--d-org)">Organization</span><span class="cd">모든 조직체(자사·고객·경쟁사·파트너·기관)의 최상위 추상 클래스</span></div>
+        <div class="cl"><span class="cn" style="color:var(--d-org)">OrganizationalUnit</span><span class="cd">사내 조직 단위(Product·Model·Platform·Business·Japan·Operation·US)</span></div>
+        <div class="cl"><span class="cn" style="color:var(--d-org)">TaskGroup</span><span class="cd">팀 하위 기능 그룹(Data·Human Data·RL)</span></div>
+        <div class="cl"><span class="cn" style="color:var(--d-org)">VirtualLab</span><span class="cd">외부 교수 협업 연구실 6곳(신진우 ALINLAB·주한별 VCLAB 등)</span></div>
+        <div class="cl"><span class="cn" style="color:var(--d-org)">Person / Professor</span><span class="cd">임직원·외부 인물 <b>113명</b>(명부 기반) / 가상랩 지도 교수 6명</span></div>
+      </div>
+    </details>
+
+    <details class="dom">
+      <summary><span class="bar" style="background:var(--d-comms)"></span><span class="dh">⑥ 커뮤니케이션 (comms)</span><span class="dc">3</span><span class="caret">›</span></summary>
+      <div class="clist">
+        <div class="cl"><span class="cn" style="color:var(--d-comms)">Narrative</span><span class="cd">핵심 메시지 체계(tech/biz × 투자자·고객·내부·언론). 주간 변화 추적</span></div>
+        <div class="cl"><span class="cn" style="color:var(--d-comms)">Deck</span><span class="cd">발표 자료(투자유치·보드·고객제안·국책). 페이지별 back-up 연결</span></div>
+        <div class="cl"><span class="cn" style="color:var(--d-comms)">PREvent</span><span class="cd">PR·행사·학회(launch event·Humanoids Summit·CES·GTC 등)</span></div>
+      </div>
+    </details>
+
+    <details class="dom">
+      <summary><span class="bar" style="background:var(--d-sources)"></span><span class="dh">⑧ 데이터소스 (sources)</span><span class="dc">6</span><span class="caret">›</span></summary>
+      <div class="clist">
+        <div class="cl"><span class="cn" style="color:var(--d-sources)">DataSource</span><span class="cd">모든 원천의 추상 클래스. 모든 개체의 <span class="k">sourcedFrom</span>이 가리키는 대상</span></div>
+        <div class="cl"><span class="cn" style="color:var(--d-sources)">SlackChannel</span><span class="cd">슬랙 채널(62개, 13유형). <span class="k">activityLevel</span>로 활성도</span></div>
+        <div class="cl"><span class="cn" style="color:var(--d-sources)">NotionPage</span><span class="cd">노션 페이지·DB(Root·대시보드·DB 포함)</span></div>
+        <div class="cl"><span class="cn" style="color:var(--d-sources)">MeetingNote</span><span class="cd">회의록(노션·구글, Meet/Zoom 스크립트). 큐레이션 <b>77건</b> · <span class="k">hasTranscript</span></span></div>
+        <div class="cl"><span class="cn" style="color:var(--d-sources)">CalendarEvent</span><span class="cd">캘린더 일정. <span class="k">agendaClear·hasMeetingNote</span></span></div>
+        <div class="cl"><span class="cn" style="color:var(--d-sources)">ExternalSource</span><span class="cd">외부 원천(경쟁사 웹사이트·뉴스·arXiv·GitHub)</span></div>
+      </div>
+    </details>
+
+    <details class="dom">
+      <summary><span class="bar" style="background:var(--d-strategy)"></span><span class="dh">⑨ 전략·실행 (strategy)</span><span class="dc">2</span><span class="caret">›</span></summary>
+      <div class="clist">
+        <div class="cl"><span class="cn" style="color:var(--d-strategy)">ActionItem</span><span class="cd">도출된 실행 항목(CBO 개인 우선순위 포함). <span class="k">derivedFrom</span>으로 근거 연결</span></div>
+        <div class="cl"><span class="cn" style="color:var(--d-strategy)">AlignmentTopic</span><span class="cd">부서간·전사·가상랩↔제품팀 사이 맞춰야 할 영역. <span class="k">betweenUnits·evidence·resolvedBy</span></span></div>
+      </div>
+    </details>
+
+    <details class="dom">
+      <summary><span class="bar" style="background:var(--d-ops)"></span><span class="dh">⑦ 운영 (ops)</span><span class="dc">2</span><span class="caret">›</span></summary>
+      <div class="clist">
+        <div class="cl"><span class="cn" style="color:var(--d-ops)">OperationIssue</span><span class="cd">HR·재무·법무·보안 주요 사안 (예: GR00T Eagle VLM 라이선스 이슈)</span></div>
+        <div class="cl"><span class="cn" style="color:var(--d-ops)">RecruitingPosition</span><span class="cd">채용 포지션·파이프라인(지원자·인터뷰 통과)</span></div>
+      </div>
+    </details>
+  </section>
+
+  <!-- FUTURE -->
+  <section>
+    <div class="sec-head">
+      <span class="eyebrow">앞으로 · 진행 방향</span>
+      <h2>데이터를 살아 있게, 산출물을 자동으로</h2>
+      <p class="note">온톨로지는 한 번 만들고 끝이 아니라, 계속 채워지고 갱신되면서 살아 있는 디지털 트윈이 됩니다.</p>
+    </div>
+    <div class="fut">
+
+      <div class="fcard">
+        <h3><span class="fi" style="background:var(--d-sources)"></span>1. 데이터 업데이트 — 살아 있게</h3>
+        <ul>
+          <li><span class="lb">주간 딜 동기화 —</span> SI Progress DB에서 stage·금액·확률을 매주 갱신, <span class="tok">statusHistory</span>에 변화 누적</li>
+          <li><span class="lb">정체·변경 감지 —</span> lastActivityAt 21일 초과 = 정체 경보, 지난주 대비 단계 변경 하이라이트</li>
+          <li><span class="lb">경쟁 인텔 연동 —</span> 이미 도는 경쟁사 Benchmark 파이프라인(주간 리포트)을 Competitor·NewsItem으로 흡수</li>
+          <li><span class="lb">신선도·출처 —</span> 모든 개체에 sourcedFrom·lastConfirmedAt·confidence를 유지해 "최신·확인된" 정보에 무게</li>
+          <li><span class="lb">거버넌스 —</span> 월간 스키마 리뷰(답 못 한 역량질문 → 스키마 개정), 주간 신규 편입(경쟁사·고객·용어)</li>
+        </ul>
+      </div>
+
+      <div class="fcard">
+        <h3><span class="fi" style="background:var(--d-comms)"></span>2. 회의록·원천 확장 — 더 넓게</h3>
+        <ul>
+          <li><span class="lb">회의록 populate —</span> 큐레이션 77건 등재(외부/전략 45 + 내부 모델·연구 32). 나머지는 CSV 데이터레이어(671건)에 존재, 필요 시 인스턴스화</li>
+          <li><span class="lb">캘린더 연동 —</span> 구글 캘린더(연결됨)로 <span class="tok">CalendarEvent</span> 채우고, 회의록화 여부·아젠다 불명확 미팅 추적</li>
+          <li><span class="lb">덱 본문 —</span> IR 4.2.1·Business 3.7 덱 본문을 추출해 <span class="tok">Narrative</span>로, 내부 진행과 gap 분석</li>
+          <li><span class="lb">가상랩 심화 —</span> 6개 랩별 연구·논문(Published papers)·서브그룹 진도를 채워 기술 도메인 강화</li>
+          <li><span class="lb">아직 막힌 것 —</span> 노션 DB 정량 쿼리(플랜 제약, CSV 우회), GitHub 코드 단위(직접 접근 불가 — Platform Team 노션으로 대체)</li>
+        </ul>
+      </div>
+
+      <div class="fcard">
+        <h3><span class="fi" style="background:var(--d-strategy)"></span>3. 가능한 산출물 — 온톨로지 위에서</h3>
+        <div class="deliv">
+          <div class="dv"><h4>주간 비즈 파이프라인 브리핑</h4><p>이번 주 볼 딜·정체 어카운트·단계 변경. 딜 46건 실측 완료</p><span class="st ready">데모 완료 · 슬랙 채널만 지정</span></div>
+          <div class="dv"><h4>경쟁 인텔 리포트</h4><p>기존 In-N-Out 주간 리포트와 온톨로지 Competitor 동기화</p><span class="st soon">연동 설계</span></div>
+          <div class="dv"><h4>데일리 캘린더 브리핑</h4><p>오늘 미팅 아젠다·참석자·불명확 미팅 알림</p><span class="st soon">캘린더 populate 후</span></div>
+          <div class="dv"><h4>내러티브 gap 분석</h4><p>투자/보드 덱 메시지 vs 내부 실제 진행 (한·영)</p><span class="st soon">덱 본문 추출 후</span></div>
+          <div class="dv"><h4>전략 인사이트 메모</h4><p>내부↔외부 격차 → AlignmentTopic·ActionItem</p><span class="st soon">월간</span></div>
+          <div class="dv"><h4>지식 그래프</h4><p>스키마·인스턴스·타입 뷰로 관계망을 탐색·공유</p><span class="st ready">가동 중</span></div>
+        </div>
+        <p class="note" style="margin-top:12px">발신·게시(슬랙·이메일·캘린더 초대)는 항상 승인 경계를 통과합니다. 읽기·분석·초안은 자유.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap" style="padding:0">
+      RLWRLD Business Digital Twin Ontology · 프로젝트 개요 · 2026-07-15 · 스키마 v0.2
+      <div class="links">
+        <a href="https://claude.ai/code/artifact/093305eb-d524-455e-8994-f588abfcd400" target="_blank" rel="noopener">DLA 구조 설명</a>
+        <a href="https://claude.ai/code/artifact/e7b69b5c-b197-4626-a728-4904cf6461ab" target="_blank" rel="noopener">지식 그래프</a>
+      </div>
+    </div>
+  </footer>
+
+</div>

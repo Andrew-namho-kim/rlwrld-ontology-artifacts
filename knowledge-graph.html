@@ -1,0 +1,769 @@
+<meta charset="utf-8">
+<title>RLWRLD Ontology — Knowledge Graph</title>
+<style>
+  :root{
+    --bg:#f5f7fa; --surface:#ffffff; --surface-2:#eef1f6;
+    --ink:#141d2b; --ink-soft:#54627a; --ink-faint:#8b98ad; --line:#d6dce6;
+    --accent:#245fd0;
+    --edge:#c2cad6; --edge-isa:#d8dee8;
+    --font-sans:-apple-system,BlinkMacSystemFont,"Segoe UI","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+    --font-mono:ui-monospace,"SF Mono","Menlo","Consolas",monospace;
+    /* domain categorical palette */
+    --d-business:#3b74e8; --d-tech:#12a69c; --d-ecosystem:#e07b2f;
+    --d-market:#c65ca0; --d-comms:#8b62d6; --d-ops:#6f7d90;
+    --d-sources:#3fa45f; --d-strategy:#db4b4b; --d-org:#c99a1e;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --bg:#0c1119; --surface:#141c27; --surface-2:#1b2430;
+      --ink:#e9eef5; --ink-soft:#97a5ba; --ink-faint:#6a788d; --line:#28323f;
+      --accent:#6fa4ff; --edge:#38424f; --edge-isa:#2b3542;
+      --d-business:#5b90ff; --d-tech:#33c2b8; --d-ecosystem:#f0965a;
+      --d-market:#e07bbd; --d-comms:#a684ee; --d-ops:#8b99ac;
+      --d-sources:#54c47c; --d-strategy:#f16a6a; --d-org:#e6bd4a;
+    }
+  }
+  :root[data-theme="light"]{
+    --bg:#f5f7fa;--surface:#ffffff;--surface-2:#eef1f6;--ink:#141d2b;--ink-soft:#54627a;
+    --ink-faint:#8b98ad;--line:#d6dce6;--accent:#245fd0;--edge:#c2cad6;--edge-isa:#d8dee8;
+    --d-business:#3b74e8;--d-tech:#12a69c;--d-ecosystem:#e07b2f;--d-market:#c65ca0;
+    --d-comms:#8b62d6;--d-ops:#6f7d90;--d-sources:#3fa45f;--d-strategy:#db4b4b;--d-org:#c99a1e;
+  }
+  :root[data-theme="dark"]{
+    --bg:#0c1119;--surface:#141c27;--surface-2:#1b2430;--ink:#e9eef5;--ink-soft:#97a5ba;
+    --ink-faint:#6a788d;--line:#28323f;--accent:#6fa4ff;--edge:#38424f;--edge-isa:#2b3542;
+    --d-business:#5b90ff;--d-tech:#33c2b8;--d-ecosystem:#f0965a;--d-market:#e07bbd;
+    --d-comms:#a684ee;--d-ops:#8b99ac;--d-sources:#54c47c;--d-strategy:#f16a6a;--d-org:#e6bd4a;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-sans);
+    -webkit-font-smoothing:antialiased;overflow:hidden}
+  #app{position:fixed;inset:0;display:flex;flex-direction:column}
+
+  header{padding:14px 18px 12px;border-bottom:1px solid var(--line);background:var(--surface);z-index:5}
+  .htop{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  h1{font-size:1.12rem;font-weight:750;letter-spacing:-.02em;margin:0}
+  .sub{font-size:.82rem;color:var(--ink-soft)}
+  .kbd{font-family:var(--font-mono);font-size:.72rem;color:var(--ink-faint)}
+  .controls{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:11px}
+  .toggle{display:inline-flex;background:var(--surface-2);border:1px solid var(--line);border-radius:9px;padding:3px}
+  .toggle button{border:none;background:none;font:inherit;font-size:.82rem;font-weight:600;color:var(--ink-soft);
+    padding:6px 13px;border-radius:6px;cursor:pointer}
+  .toggle button.on{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+  .btn{border:1px solid var(--line);background:var(--surface);color:var(--ink-soft);font:inherit;font-size:.8rem;
+    padding:6px 12px;border-radius:8px;cursor:pointer}
+  .btn:hover{color:var(--ink)}
+  .count{font-size:.78rem;color:var(--ink-faint);font-family:var(--font-mono)}
+
+  .legend{display:flex;flex-wrap:wrap;gap:8px 14px;margin-top:11px}
+  .lg{display:flex;align-items:center;gap:6px;font-size:.76rem;color:var(--ink-soft);cursor:pointer;
+    user-select:none;padding:2px 4px;border-radius:5px}
+  .lg:hover{background:var(--surface-2)}
+  .lg.off{opacity:.35}
+  .sw{width:11px;height:11px;border-radius:50%;flex:none}
+
+  .stage-wrap{position:relative;flex:1;min-height:0}
+  canvas{display:block;width:100%;height:100%;cursor:grab;touch-action:none}
+  canvas.grabbing{cursor:grabbing}
+
+  #detail{position:absolute;top:14px;right:14px;width:290px;max-width:calc(100vw - 28px);
+    background:var(--surface);border:1px solid var(--line);border-radius:13px;
+    box-shadow:0 8px 30px rgba(0,0,0,.18);padding:15px 16px;font-size:.85rem;display:none;z-index:6}
+  #detail.show{display:block}
+  #detail .dclose{position:absolute;top:10px;right:12px;border:none;background:none;color:var(--ink-faint);
+    font-size:1.1rem;cursor:pointer;line-height:1}
+  #detail .dkind{font-family:var(--font-mono);font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;
+    margin-bottom:5px}
+  #detail h3{margin:0 0 3px;font-size:1.02rem;font-weight:750;letter-spacing:-.01em;padding-right:16px}
+  #detail .ddesc{color:var(--ink-soft);font-size:.8rem;margin-bottom:10px}
+  #detail .rel-h{font-family:var(--font-mono);font-size:.62rem;letter-spacing:.09em;text-transform:uppercase;
+    color:var(--ink-faint);margin:11px 0 5px}
+  #detail .rel{display:flex;gap:7px;align-items:baseline;font-size:.8rem;padding:3px 0}
+  #detail .rel .rn{font-family:var(--font-mono);color:var(--accent);flex:none}
+  #detail .rel .rt{color:var(--ink)}
+  #detail .rel .ri{color:var(--ink-faint);font-family:var(--font-mono);font-size:.72rem}
+
+  .hint{position:absolute;left:14px;bottom:12px;font-size:.74rem;color:var(--ink-faint);
+    background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:6px 10px;z-index:6}
+
+  /* ---- tabs ---- */
+  .tabs{display:inline-flex;gap:2px;background:var(--surface-2);border:1px solid var(--line);border-radius:9px;padding:3px}
+  .tab{border:none;background:none;font:inherit;font-size:.84rem;font-weight:650;color:var(--ink-soft);
+    padding:6px 15px;border-radius:6px;cursor:pointer}
+  .tab.on{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+
+  /* ---- views ---- */
+  .view{flex:1;min-height:0;display:none;flex-direction:column;overflow:hidden}
+  .view.on{display:flex}
+  .subbar{padding:12px 18px;border-bottom:1px solid var(--line);background:var(--surface);z-index:4}
+  .subbar .controls{margin-top:0}
+  .subbar .legend{margin-top:10px}
+
+  /* ---- cli console ---- */
+  .cli{flex:1;min-height:0;display:flex;flex-direction:column;background:var(--bg)}
+  .cli-scroll{flex:1;min-height:0;overflow-y:auto;padding:22px 20px 12px;
+    font-family:var(--font-mono);font-size:.82rem;line-height:1.6;color:var(--ink)}
+  .cli-entry{margin:0 0 20px;max-width:880px}
+  .cli-cmd{color:var(--ink-soft);white-space:pre-wrap;word-break:break-word}
+  .cli-cmd .p{color:var(--accent);font-weight:700;margin-right:8px}
+  .cli-res{margin-top:9px}
+  .r-line{color:var(--ink)} .r-line b{font-variant-numeric:tabular-nums}
+  .r-muted{color:var(--ink-faint)}
+  .r-head{color:var(--ink-faint);font-size:.68rem;letter-spacing:.09em;text-transform:uppercase;margin:0 0 9px}
+  .cli code{font-family:var(--font-mono);background:var(--surface-2);border:1px solid var(--line);
+    border-radius:5px;padding:1px 6px;font-size:.92em;color:var(--ink)}
+  .chips{display:flex;flex-wrap:wrap;gap:7px}
+  .chip{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);background:var(--surface);
+    border-radius:999px;padding:4px 12px;font-size:.78rem;color:var(--ink);cursor:pointer;
+    font-family:var(--font-sans);transition:border-color .12s,transform .12s}
+  .chip:hover{border-color:var(--accent);transform:translateY(-1px)}
+  .chip .dot{width:8px;height:8px;border-radius:50%;flex:none}
+  .chip.ex{font-family:var(--font-mono);color:var(--ink-soft)}
+  .node-card{border:1px solid var(--line);border-radius:13px;background:var(--surface);padding:15px 17px;max-width:580px}
+  .nc-kind{font-family:var(--font-mono);font-size:.64rem;letter-spacing:.09em;text-transform:uppercase;margin-bottom:5px}
+  .node-card h4{margin:0 0 3px;font-size:1.05rem;font-family:var(--font-sans);font-weight:750;letter-spacing:-.01em}
+  .nc-desc{color:var(--ink-soft);font-size:.82rem;font-family:var(--font-sans);margin-bottom:4px}
+  .rel-h{font-family:var(--font-mono);font-size:.62rem;letter-spacing:.09em;text-transform:uppercase;
+    color:var(--ink-faint);margin:12px 0 5px}
+  .rel-row{display:flex;gap:8px;align-items:baseline;padding:3px 0;flex-wrap:wrap}
+  .rel-row .rn{color:var(--accent);flex:none;font-size:.78rem}
+  .rel-row .rt{color:var(--ink);cursor:pointer;border-bottom:1px dotted var(--ink-faint)}
+  .rel-row .rt:hover{color:var(--accent);border-bottom-color:var(--accent)}
+  .rel-row .rc{color:var(--ink-faint);font-size:.74rem}
+  .gobtn{margin-top:14px;border:1px solid var(--line);background:var(--surface-2);color:var(--ink-soft);
+    font-family:var(--font-sans);font-size:.76rem;padding:6px 12px;border-radius:8px;cursor:pointer}
+  .gobtn:hover{color:var(--ink);border-color:var(--accent)}
+  .stat-rows{display:flex;flex-direction:column;gap:6px;max-width:470px}
+  .stat-row{display:grid;grid-template-columns:120px 1fr 42px;align-items:center;gap:10px}
+  .stat-name{font-family:var(--font-sans);font-size:.8rem;color:var(--ink);cursor:pointer}
+  .stat-name:hover{color:var(--accent)}
+  .stat-row .bar{height:9px;border-radius:5px;min-width:3px}
+  .stat-num{font-variant-numeric:tabular-nums;text-align:right;color:var(--ink-soft);font-size:.8rem}
+  .path{display:flex;flex-wrap:wrap;align-items:center;gap:8px;max-width:660px}
+  .path-rel{font-family:var(--font-mono);font-size:.72rem;color:var(--ink-faint)}
+  .help{display:flex;flex-direction:column;gap:7px;max-width:580px}
+  .help-row{display:grid;grid-template-columns:210px 1fr;gap:12px;align-items:baseline}
+  .help-row span{font-family:var(--font-sans);font-size:.82rem;color:var(--ink-soft)}
+  .welcome code{cursor:default}
+
+  @media (max-width:640px){
+    #detail{width:auto;left:14px;right:14px} .hint{display:none}
+    .htop .sub{display:none}
+    .stat-row{grid-template-columns:88px 1fr 34px}
+    .help-row{grid-template-columns:1fr}
+  }
+</style>
+
+<div id="app">
+  <header>
+    <div class="htop">
+      <h1>RLWRLD 온톨로지 · 지식 그래프</h1>
+      <span class="sub">클래스와 인스턴스가 관계로 엮인 망. <span class="count" id="cnt"></span></span>
+    </div>
+  </header>
+
+  <section id="view-graph" class="view on">
+    <div class="subbar">
+      <div class="controls">
+        <div class="toggle" id="viewToggle">
+          <button data-v="schema" class="on">클래스 관계 (스키마)</button>
+          <button data-v="instance">실제 데이터 (인스턴스)</button>
+        </div>
+        <button class="btn" id="resetBtn">보기 초기화</button>
+        <label class="btn" id="typeToggleWrap" style="display:inline-flex;align-items:center;gap:7px;cursor:pointer">
+          <input type="checkbox" id="typeToggle" style="margin:0"> 타입(클래스) 노드 표시
+        </label>
+        <span class="kbd">드래그로 이동 · 휠로 확대 · 노드 클릭 시 상세</span>
+      </div>
+      <div class="legend" id="legend"></div>
+    </div>
+    <div class="stage-wrap">
+      <canvas id="cv"></canvas>
+      <div id="detail">
+        <button class="dclose" id="dclose" aria-label="닫기">×</button>
+        <div class="dkind" id="dkind"></div>
+        <h3 id="dname"></h3>
+        <div class="ddesc" id="ddesc"></div>
+        <div id="drels"></div>
+      </div>
+      <div class="hint" id="hint">화살표 = 관계(동사) · 점선 = is-a/타입 · 버블 클수록 연결 많음 · "타입 노드 표시" 켜면 ◆클래스 부모 등장</div>
+    </div>
+  </section>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  const DOMAINS = {
+    business:{ko:"사업",v:"--d-business"}, tech:{ko:"기술",v:"--d-tech"},
+    ecosystem:{ko:"경쟁·생태계",v:"--d-ecosystem"}, market:{ko:"고객·시장",v:"--d-market"},
+    comms:{ko:"커뮤니케이션",v:"--d-comms"}, ops:{ko:"운영",v:"--d-ops"},
+    sources:{ko:"데이터소스",v:"--d-sources"}, strategy:{ko:"전략·실행",v:"--d-strategy"},
+    org:{ko:"조직·사람",v:"--d-org"}
+  };
+  function cssv(name){return getComputedStyle(document.documentElement).getPropertyValue(name).trim();}
+  function domColor(d){return cssv(DOMAINS[d]?DOMAINS[d].v:"--ink-soft");}
+
+  // ---------- SCHEMA GRAPH (classes + relation types) ----------
+  const SCHEMA_NODES = [
+    // org
+    ["Organization","org","모든 조직체의 최상위"],["OrganizationalUnit","org","사내 조직 단위"],
+    ["TaskGroup","org","팀 하위 기능 그룹"],["VirtualLab","org","외부 교수 협업 연구실"],
+    ["Person","org","임직원·외부 인물"],["Professor","org","가상랩 지도 교수"],
+    // business
+    ["BusinessUnit","business","RX·RD·BSP·DATA 사업 단위"],["Account","market","고객·수요 기업 (v0.2: 고객·시장 도메인)"],
+    ["Deal","business","회사×상품 단위 개별 딜"],["Partnership","business","전략 파트너십"],
+    ["NationalProject","business","정부 국책과제"],["Demo","business","데모·Mini PoC"],
+    // tech
+    ["ResearchProject","tech","내부·가상랩 연구 과제"],["Product","tech","제품화 자산"],
+    ["Model","tech","내부 AI 모델"],["Dataset","tech","학습 데이터"],
+    ["Hardware","tech","로봇 HW 자산"],["TechArea","tech","기술 관심 영역"],
+    // ecosystem
+    ["Competitor","ecosystem","경쟁·생태계 업체"],["Investor","ecosystem","VC·CVC·투자자"],
+    ["NewsItem","ecosystem","외부 뉴스·발표"],["Publication","ecosystem","논문·블로그"],
+    // market
+    ["Industry","market","산업 분류"],["UseCase","market","로봇 적용 use case"],
+    // comms
+    ["Narrative","comms","핵심 메시지 체계"],["Deck","comms","발표 자료"],["PREvent","comms","PR·행사·학회"],
+    // ops
+    ["OperationIssue","ops","HR·재무·법무 사안"],["RecruitingPosition","ops","채용 포지션"],
+    // sources
+    ["DataSource","sources","모든 원천의 추상"],["SlackChannel","sources","슬랙 채널"],
+    ["NotionPage","sources","노션 페이지·DB"],["MeetingNote","sources","회의록"],
+    ["CalendarEvent","sources","캘린더 일정"],["ExternalSource","sources","외부 원천"],
+    // strategy
+    ["ActionItem","strategy","도출된 실행 항목"],["AlignmentTopic","strategy","align 필요 영역"]
+  ];
+  // [source, target, relation, isa?]
+  const SCHEMA_LINKS = [
+    ["OrganizationalUnit","Organization","",1],["TaskGroup","OrganizationalUnit","",1],
+    ["VirtualLab","OrganizationalUnit","",1],["Professor","Person","",1],
+    ["Account","Organization","",1],["Competitor","Organization","",1],["Investor","Organization","",1],
+    ["SlackChannel","DataSource","",1],["NotionPage","DataSource","",1],["MeetingNote","DataSource","",1],
+    ["CalendarEvent","DataSource","",1],["ExternalSource","DataSource","",1],
+    ["OrganizationalUnit","OrganizationalUnit","parentUnit"],["OrganizationalUnit","Person","leadBy"],
+    ["VirtualLab","Professor","professor"],["VirtualLab","TaskGroup","collaboratesWith"],
+    ["Person","OrganizationalUnit","memberOf"],
+    ["BusinessUnit","OrganizationalUnit","operatedBy"],
+    ["Account","Deal","hasDeal"],["Account","Person","ownedBy"],
+    ["Account","NotionPage","rootPage"],["Account","DataSource","discussedIn"],["Account","Industry","industry"],
+    ["Deal","BusinessUnit","businessUnit"],["Deal","UseCase","useCase"],["Deal","Demo","hasDemo"],
+    ["Partnership","Organization","partner"],["Partnership","BusinessUnit","relatedBusinessUnit"],
+    ["NationalProject","Organization","consortium"],["NationalProject","Person","ownedBy"],
+    ["Demo","Product","usesProduct"],["Demo","Hardware","usesHardware"],["Demo","Account","targetAccount"],
+    ["ResearchProject","Person","ledBy"],["ResearchProject","OrganizationalUnit","owningGroup"],
+    ["ResearchProject","TechArea","techArea"],["ResearchProject","Dataset","producesDataset"],
+    ["ResearchProject","Model","feedsInto"],["ResearchProject","SlackChannel","mainChannel"],
+    ["Product","Model","basedOnModel"],["Product","Hardware","usesHardware"],["Product","OperationIssue","licenseIssue"],
+    ["Model","Dataset","trainedOn"],["Model","Competitor","comparableTo"],
+    ["Dataset","TaskGroup","collectedBy"],["Dataset","Deal","collectedFor"],
+    ["Hardware","Organization","vendor"],["Hardware","TechArea","relatedTechArea"],
+    ["Competitor","TechArea","focusArea"],["Competitor","BusinessUnit","competesWith"],
+    ["Competitor","Investor","backedBy"],["Competitor","Account","customerOf"],["Competitor","DataSource","mentionedIn"],
+    ["Investor","Organization","invests"],
+    ["NewsItem","Organization","about"],["NewsItem","TechArea","relatedTechArea"],["NewsItem","ExternalSource","source"],
+    ["Publication","Organization","author"],["Publication","TechArea","relatedTechArea"],
+    ["UseCase","Industry","industry"],["UseCase","Demo","demonstratedBy"],
+    ["Narrative","DataSource","backedBy"],["Narrative","Deck","usedIn"],["Narrative","Person","spokenBy"],
+    ["Deck","Narrative","containsNarrative"],["Deck","NotionPage","backupMaterial"],
+    ["PREvent","Person","attendedBy"],["PREvent","SlackChannel","relatedChannel"],
+    ["OperationIssue","Person","ownedBy"],["RecruitingPosition","OrganizationalUnit","hiringTeam"],
+    ["MeetingNote","Person","attendees"],["MeetingNote","CalendarEvent","fromCalendarEvent"],
+    ["MeetingNote","NotionPage","storedIn"],
+    ["CalendarEvent","Person","attendees"],["CalendarEvent","MeetingNote","hasMeetingNote"],
+    ["ActionItem","Person","owner"],
+    ["AlignmentTopic","OrganizationalUnit","betweenUnits"],["AlignmentTopic","DataSource","evidence"],
+    ["AlignmentTopic","ActionItem","resolvedBy"]
+  ];
+
+  // ---------- INSTANCE GRAPH (전체 인스턴스, 프로그래밍적 생성 ~220개) ----------
+  const INST_NODES=[], INST_LINKS=[];
+  (function(){
+    const N=(id,dom,cls,desc)=>INST_NODES.push([id,dom,cls,desc||""]);
+    const L=(s,t,rel,isa)=>INST_LINKS.push([s,t,rel||"",isa?1:0]);
+
+    ["RX","RD","BSP","DATA","NATL"].forEach(c=>N("BU:"+c,"business","BusinessUnit","사업 단위"));
+
+    const ACC=[["FUJI","JP"],["ANA","JP"],["KCCS","JP"],["CJ대한통운","KR"],["Mitsui화학","JP"],
+      ["이마트","KR"],["미쓰이물산","KR"],["삼성SDS","KR"],["BGF","KR"],["LG이노텍","KR"],
+      ["한진","KR"],["LG전자","KR"],["만도","KR"],["정원산업","KR"],["파스토","KR"],
+      ["루치노바","KR"],["롯데호텔","KR"],["한화시스템즈","KR"],["BMW","Global"],["KDDI/LAWSON","JP"],
+      ["TOKYU","JP"],["SK","KR"],["Hitachi","JP"],["JGC","JP"],["Honda","JP"],
+      ["인천공항","KR"],["ASKUL","JP"],["Shimadzu","JP"],["롯데GRS","KR"],["Mitsubishi전기","JP"]];
+    // 스키마 v0.2: Account = 고객·시장(수요) 도메인. 사업(engagement) 노드와 분리.
+    ACC.forEach(a=>N(a[0],"market","Account","고객 · "+a[1]));
+    // 산업(Industry) = 고객·시장의 '부모' 허브 (BU가 딜의 부모인 것과 동일 구조)
+    const IND=["산업:물류","산업:제조·전자","산업:자동차","산업:유통·리테일","산업:호텔·서비스","산업:항공","산업:화학·소재","산업:건설·엔지니어링","산업:상사·기타"];
+    IND.forEach(i=>N(i,"market","Industry",""));
+    const ACCIND={FUJI:"제조·전자",ANA:"항공",KCCS:"상사·기타","CJ대한통운":"물류","Mitsui화학":"화학·소재",
+      "이마트":"유통·리테일","미쓰이물산":"상사·기타","삼성SDS":"상사·기타",BGF:"유통·리테일","LG이노텍":"제조·전자",
+      "한진":"물류","LG전자":"제조·전자","만도":"자동차","정원산업":"제조·전자","파스토":"물류",
+      "루치노바":"제조·전자","롯데호텔":"호텔·서비스","한화시스템즈":"건설·엔지니어링",BMW:"자동차","KDDI/LAWSON":"유통·리테일",
+      TOKYU:"건설·엔지니어링",SK:"상사·기타",Hitachi:"제조·전자",JGC:"건설·엔지니어링",Honda:"자동차",
+      "인천공항":"항공",ASKUL:"물류",Shimadzu:"제조·전자","롯데GRS":"호텔·서비스","Mitsubishi전기":"제조·전자"};
+    Object.keys(ACCIND).forEach(a=>L(a,"산업:"+ACCIND[a],"industry"));
+
+    const DEAL=[
+      ["FUJI RX","FUJI","RX","Contracting·1억"],["FUJI MiniPoC","FUJI","RD","Contracting·1.2억"],["FUJI DataPoC","FUJI","DATA","1.67억·25%"],
+      ["CJL RX","CJ대한통운","RX","Proposal·4.5억"],["CJL MiniPoC","CJ대한통운","RD","Uncertain"],["CJL DataPoC","CJ대한통운","DATA","Uncertain"],
+      ["LGE RX","LG전자","RX","Uncertain"],["LGE MiniPoC","LG전자","RD","Uncertain"],["LGE DataPoC","LG전자","DATA","Uncertain"],
+      ["LGIT MiniPoC","LG이노텍","RD","Early·CES2027"],
+      ["BMW MiniPoC1","BMW","RD","Live·100%"],["BMW MiniPoC2","BMW","RD","Early·1.2억"],["BMW RX","BMW","RX","Uncertain"],["BMW DataPoC","BMW","DATA","Uncertain"],
+      ["KDDI MiniPoC","KDDI/LAWSON","RD","'25완료·3천"],["KDDI RX","KDDI/LAWSON","RX","-"],
+      ["롯데호텔 RX","롯데호텔","RX","'25완료·2.5억"],["이마트 RX","이마트","RX","Proposal·2.5억"],
+      ["만도 MiniPoC","만도","RD","Early·국책"],["한진 DataPoC","한진","DATA","Uncertain"],
+      ["미쓰이 MiniPoC","미쓰이물산","RD","Proposal·9억"],["TOKYU 딜","TOKYU","RX","Dropped"],
+      ["SK RX(컨설팅)","SK","RX","Live·100%"],["SK RX(전략)","SK","RX","Live·100%"],["SK MiniPoC","SK","RD","Uncertain·3억"],["SK DataPoC","SK","DATA","Uncertain·3.75억"],
+      ["ANA GH RX","ANA","RX","Live"],["ANA GH MiniPoC","ANA","RD","-"],["ANA Parts RX","ANA","RX","Proposal"],
+      ["Hitachi RX","Hitachi","RX","2.8억"],["Hitachi MiniPoC","Hitachi","RD","1.84억"],["Hitachi DataPoC","Hitachi","DATA","2.5억"],["Hitachi sys","Hitachi","RX","-"],
+      ["JGC RX","JGC","RX","-"],["JGC MiniPoC","JGC","RD","-"],["JGC DataPoC","JGC","DATA","-"],
+      ["Honda MiniPoC1","Honda","RD","Live·3천"],["Honda MiniPoC2","Honda","RD","Early·1.86억"],
+      ["인천공항 RX","인천공항","RX","Dropped"],["인천공항 MiniPoC","인천공항","RD","Dropped"],["인천공항 DataPoC","인천공항","DATA","Dropped"],
+      ["ASKUL MiniPoC","ASKUL","RD","50%"],["Shimadzu MiniPoC","Shimadzu","RD","50%"],
+      ["롯데GRS RX","롯데GRS","RX","Uncertain·1.5억"],["Mitsubishi RX","Mitsubishi전기","RX","-"]];
+    DEAL.forEach(d=>{ N(d[0],"business","Deal",d[3]); L(d[1],d[0],"hasDeal"); L(d[0],"BU:"+d[2],"businessUnit"); L(d[0],"SI Progress DB","sourcedFrom"); });
+
+    const NAT=[["국책:ARPA-H","진행중"],["국책:호텔AX","진행중"],["국책:첨단GPU","진행중"],["국책:GMEP","진행중"],
+      ["국책:TIPA글로벌","제출"],["국책:스케일업팁스","제출"],["국책:5D월드모델","제출"],
+      ["국책:K-온디바이스","제안"],["국책:GITCC-MAX","제안·100억"],["국책:전북AX","제안"],["국책:경남AX","제안"],
+      ["국책:KIRIA실증","제안"],["국책:DCP-RFM","제안"],["국책:데이터팩토리","공고예정"],
+      ["국책:NIA물류","공고예정"],["국책:산기평이차전지","수요조사"],["국책:제조암묵지","수요조사"]];
+    NAT.forEach(p=>{ N(p[0],"business","NationalProject",p[1]); L(p[0],"BU:NATL","businessUnit"); });
+    L("국책:호텔AX","롯데호텔","consortium");
+    L("국책:GITCC-MAX","만도","consortium"); L("국책:GITCC-MAX","PT:Fraunhofer","consortium");
+    L("국책:5D월드모델","VLab:ALINLAB","consortium"); L("국책:5D월드모델","정원산업","consortium");
+    L("국책:데이터팩토리","LG전자","consortium");
+    L("국책:TIPA글로벌","PT:Fraunhofer","consortium"); L("국책:TIPA글로벌","정원산업","consortium");
+    L("국책:NIA물류","파스토","consortium");
+
+    const PT=[["PT:NVIDIA","BigTech"],["PT:AWS","BigTech"],["PT:WiRobotics","HW"],["PT:Monty","기술"],
+      ["PT:UCLA-RoMeLa","연구"],["PT:DeepingSource","기술"],["PT:InsightPartners","투자연계"],
+      ["PT:Fraunhofer","연구"],["PT:SnowflakeVentures","투자연계"]];
+    PT.forEach(p=>N(p[0],"business","Partnership",p[1]));
+    L("PT:NVIDIA","NVIDIA","partner"); L("PT:AWS","BU:DATA","relatedBU"); L("PT:InsightPartners","BU:RD","relatedBU");
+
+    const COMP=[["NVIDIA","BigTech","P0"],["Google Gemini","BigTech","P0"],["MS Ro-Alpha","BigTech","P0"],
+      ["Skild AI","RFM","P0"],["Physical Intelligence","RFM","P0"],["Generalist","RFM","P0"],
+      ["Tesla","풀스택","P1"],["Figure","풀스택","P1"],["Agility","HW+Dep","P1"],["Sunday","RFM+Dep","P1"],
+      ["Genesis AI","RFM","P1"],["Mimic","RFM","P1"],["Boston Dynamics","HW+Dep","P1"],["General Robotics","RFM","P1"],
+      ["Hexagon","HW+Dep","P1"],["Unitree","CN","P1"],["UBTECH","CN","P1"],["Neura","풀스택","P1"],
+      ["Rainbow","KRJP","P1"],["Robotera","CN","P1"],["1X","HW+Dep","P2"],["Apptronik","HW+Dep","P2"],
+      ["Sanctuary","HW+Dep","P2"],["Dyna","RFM+Dep","P2"],["AGIBOT","CN","P2"],["GALBOT","CN","P2"],
+      ["Galaxea","CN","P2"],["Covariant","RFM","P2"],["Tommoro","신흥","P2"],["Holiday","신흥","P2"]];
+    const DEX=["NVIDIA","Google Gemini","Skild AI","Physical Intelligence","Generalist","Genesis AI","Mimic"];
+    // 경쟁사 유형(CompetitorType) = 생태계의 '부모' 허브
+    ["BigTech","RFM","풀스택","HW+Dep","RFM+Dep","CN","KRJP","신흥"].forEach(t=>N("유형:"+t,"ecosystem","CompetitorType",""));
+    COMP.forEach(c=>{ N(c[0],"ecosystem","Competitor",c[1]+" · "+c[2]); L(c[0],"유형:"+c[1],"typeOf"); if(DEX.indexOf(c[0])>=0)L(c[0],"TA:Dexterity","focusArea"); });
+    // competesWith는 개별 경쟁사→RD 남발 대신, 유형이 실제로 겹치는 사업 라인에만 (coarse)
+    L("유형:RFM","BU:DATA","competesWith"); L("유형:RFM+Dep","BU:RD","competesWith");
+    L("유형:풀스택","BU:RD","competesWith"); L("유형:HW+Dep","BU:RX","competesWith");
+    L("Hexagon","BMW","customerOf");
+    L("NVIDIA","slack:news","mentionedIn"); L("Genesis AI","slack:news","mentionedIn");
+    ["INV:YC","INV:A16Z","INV:GlobalBrain"].forEach(i=>N(i,"ecosystem","Investor","투자사"));
+    L("Physical Intelligence","INV:A16Z","backedBy"); L("Tommoro","INV:YC","backedBy"); L("INV:GlobalBrain","JGC","invests");
+
+    [["Prod:RRC","표준 플랫폼·출시"],["Prod:RLDX","플래그십 VLA"],["Prod:Dex Bench","벤치마크"],["Prod:EaaS","프로토타입"],["Prod:ALIN","내부"]].forEach(p=>N(p[0],"tech","Product",p[1]));
+    [["Model:G0","4D+ VLA 하이브리드 · BMW 실배포"],["Model:RLDX-1","플래그십 RFM · 1→1.1"],["Model:RFM-Backbone","VLM 백본 · Eagle→Florence"],["Model:WorldModel","4D+ / G1 (개발중)"]].forEach(m=>N(m[0],"tech","Model",m[1]));
+    [["DS:HRDexDB","손조작"],["DS:HumanData",""],["DS:Synthetic",""]].forEach(d=>N(d[0],"tech","Dataset",d[1]));
+    [["HW:Allex","자체핸드"],["HW:XHand","Robotera"],["HW:Inspire","RH56"],["HW:Wuji","1000Hz"],["HW:Tesollo","신규"],["HW:OpenArm","암"],["HW:RBY1","레인보우"]].forEach(h=>N(h[0],"tech","Hardware",h[1]));
+    [["TA:Dexterity","P0"],["TA:CloudRFM","P0"],["TA:Tactile","P0"],["TA:WorldModel","P1"],["TA:TeleopPipe","P0"],["TA:Sim","P1"],["TA:EdgeFleet","P2"]].forEach(t=>N(t[0],"tech","TechArea",t[1]));
+    [["RP:FasterVLA",""],["RP:RFMBackbone",""],["RP:SyntheticData",""],["RP:LongHorizon",""],["RP:HumanData",""],["RP:OpenArm",""],["RP:Teleop",""],["RP:Origami",""],["RP:ResearchEng","subgroup"]].forEach(r=>N(r[0],"tech","ResearchProject",r[1]));
+    const VL=[["VLab:IRIMLAB","김용재"],["VLab:ALINLAB","신진우·KAIST"],["VLab:RVLAB","임종우"],["VLab:CVLAB","조민수"],["VLab:VCLAB","주한별·SNU"],["VLab:RILAB","최성준"]];
+    VL.forEach(v=>N(v[0],"org","VirtualLab",v[1]));
+    const PROF=[["김용재",""],["신진우","KAIST"],["임종우",""],["조민수",""],["주한별","SNU"],["최성준",""]];
+    PROF.forEach(p=>N(p[0],"org","Professor",p[1]));
+    VL.forEach((v,i)=>L(v[0],PROF[i][0],"professor"));
+    [["TG:Data",""],["TG:HumanData",""],["TG:RL",""]].forEach(t=>N(t[0],"org","TaskGroup",t[1]));
+    [["Unit:ProductTeam","최대 기술조직 · 리서처 대부분(명부 40명)"],["Unit:ModelTeam","'26.7 분리 · 소규모(2명)"],["Unit:PlatformTeam","'26.7 분리 · 소규모(4명)"],["Unit:BizStrategy","Business Team (BSP/RX/RD)"],["Unit:Japan","JP 지사"],["Unit:HR&Ops","Operation Team"],["Unit:ResearchLab","Research Lab · 교수 6인"],["Unit:US","US 법인"]].forEach(u=>N(u[0],"org","OrganizationalUnit",u[1]));
+    // C-level (임직원 명부 2026-07)
+    [["P:류중희","CEO · 연구소장"],["P:이강욱","CBO"],["P:배재경","CTO (Storm)"],["P:류형규","CPO (hk)"],["P:안지윤","CSO (hensen)"]].forEach(p=>N(p[0],"org","Person",p[1]));
+    L("P:이강욱","Unit:BizStrategy","memberOf"); L("P:배재경","Unit:ProductTeam","memberOf"); L("P:류형규","Unit:ProductTeam","memberOf"); L("P:안지윤","Unit:HR&Ops","memberOf");
+    L("P:류중희","Unit:ProductTeam","총괄"); L("P:류중희","Unit:BizStrategy","총괄");
+    L("Unit:ResearchLab","Unit:ProductTeam","advises");
+    ["김용재","신진우","임종우","조민수","주한별","최성준"].forEach(pr=>L(pr,"Unit:ResearchLab","memberOf"));
+    // ★ 정정(명부 기준): 리서처는 Model/Platform로 안 나뉨 → 대부분 Product Team 소속
+    ["TG:Data","TG:HumanData","TG:RL"].forEach(t=>L(t,"Unit:ProductTeam","parentUnit"));
+    ["HW:Allex","HW:OpenArm","HW:RBY1","HW:XHand","HW:Inspire","HW:Wuji"].forEach(h=>L("Prod:RRC",h,"usesHardware"));
+    L("Prod:RRC","Unit:PlatformTeam","ownedBy"); L("HW:Allex","TA:Dexterity","relatedTechArea"); L("HW:Tesollo","TA:Tactile","relatedTechArea");
+    L("RP:FasterVLA","Unit:ProductTeam","owningGroup"); L("RP:RFMBackbone","Unit:ProductTeam","owningGroup");
+    L("RP:SyntheticData","TG:Data","owningGroup"); L("RP:HumanData","TG:HumanData","owningGroup");
+    L("RP:LongHorizon","신진우","ledBy"); L("RP:LongHorizon","slack:vlab","mainChannel"); L("RP:ResearchEng","Unit:ProductTeam","owningGroup");
+    L("RP:OpenArm","VLab:ALINLAB","owningGroup");
+    L("VLab:VCLAB","TG:HumanData","collaboratesWith"); L("VLab:VCLAB","DS:HRDexDB","producesDataset"); L("DS:HRDexDB","TG:HumanData","collectedBy");
+    L("Prod:RLDX","Model:RLDX-1","basedOnModel"); L("Prod:RRC","Model:G0","basedOnModel"); L("Prod:RRC","Model:RLDX-1","basedOnModel");
+    L("Model:G0","DS:HRDexDB","trainedOn"); L("Model:RLDX-1","DS:HRDexDB","trainedOn");
+    L("Model:RFM-Backbone","Model:RLDX-1","feedsInto"); L("Model:RFM-Backbone","Model:G0","feedsInto");
+    L("RP:RFMBackbone","Model:RFM-Backbone","feedsInto"); L("RP:FasterVLA","Model:RFM-Backbone","feedsInto");
+    L("Prod:Dex Bench","Model:G0","benchmarks"); L("Prod:Dex Bench","Model:RLDX-1","benchmarks");
+    // Model.comparableTo → Competitor (우리 vs 경쟁 비교축 — Q21·28)
+    L("Model:G0","Google Gemini","comparableTo"); L("Model:G0","Tesla","comparableTo"); L("Model:G0","Figure","comparableTo");
+    L("Model:G0","Genesis AI","comparableTo"); L("Model:G0","Mimic","comparableTo");
+    L("Model:RLDX-1","Physical Intelligence","comparableTo"); L("Model:RLDX-1","Skild AI","comparableTo");
+    L("Model:RLDX-1","Generalist","comparableTo"); L("Model:RLDX-1","NVIDIA","comparableTo");
+    L("Model:RFM-Backbone","NVIDIA","comparableTo"); L("Model:RFM-Backbone","Physical Intelligence","comparableTo");
+    L("Model:WorldModel","NVIDIA","comparableTo"); L("Model:WorldModel","1X","comparableTo"); L("Model:WorldModel","Genesis AI","comparableTo");
+    L("Model:WorldModel","TA:WorldModel","relatedTechArea"); L("Model:G0","TA:Dexterity","focusArea");
+    // RLDX = 플래그십 제품 → 연구·평가·배포·논의의 교차점(허브)
+    L("Prod:Dex Bench","Prod:RLDX","benchmarks");
+    L("RP:LongHorizon","Prod:RLDX","feedsInto"); L("RP:ResearchEng","Prod:RLDX","feedsInto");
+    L("RP:FasterVLA","Prod:RLDX","feedsInto"); L("RP:RFMBackbone","Prod:RLDX","feedsInto");
+    L("BMW MiniPoC1","Prod:RLDX","usesProduct"); L("ANA GH RX","Prod:RLDX","usesProduct");
+    L("Prod:RLDX","slack:vlab","discussedIn"); L("Prod:RLDX","TA:Dexterity","relatedTechArea");
+    L("LGIT MiniPoC","HW:RBY1","usesHardware"); L("LGIT MiniPoC","HW:Tesollo","usesHardware"); L("BMW MiniPoC1","HW:OpenArm","usesHardware");
+
+    [["Deck:IR4.2.1","투자유치"],["Deck:IR vS","투자유치"],["Deck:Business3.7","고객제안"],["Deck:Business3.2.2","고객제안"],["Deck:PublicTeaser","공개"]].forEach(d=>N(d[0],"comms","Deck",d[1]));
+    [["Nar:biz","비즈"],["Nar:tech","기술"]].forEach(n2=>N(n2[0],"comms","Narrative",n2[1]));
+    L("Deck:IR4.2.1","Nar:biz","containsNarrative"); L("Deck:Business3.7","Nar:biz","containsNarrative"); L("Deck:IR4.2.1","Nar:tech","containsNarrative");
+    L("Nar:biz","SI Progress DB","backedBy"); L("Nar:tech","Prod:RLDX","backedBy");
+    N("PR:US런칭","comms","PREvent","RLDX-1 US"); L("PR:US런칭","Prod:RLDX","relatedTo");
+
+    const SRC=[["SI Progress DB","NotionPage","딜 마스터"],["국책 Dashboard","NotionPage",""],["Partnership Log","NotionPage",""],
+      ["BD status","NotionPage",""],["경쟁 파이프라인","ExternalSource","기존 자동화"],["Benchmark 주간리포트","NotionPage",""],
+      ["VLab 워크스페이스","NotionPage",""],["VLab 회의록DB","NotionPage",""],["Platform Team","NotionPage",""],
+      ["slack:proj-rx-fuji","SlackChannel",""],["slack:proj-rx-cjl","SlackChannel",""],["slack:proj-rx-ana","SlackChannel",""],
+      ["slack:natl","SlackChannel",""],["slack:news","SlackChannel","뉴스"],["slack:knowledge-feed","SlackChannel",""],
+      ["slack:vlab","SlackChannel","가상랩"],["slack:kr-jp-sync","SlackChannel",""],
+      ["slack:__momentum","SlackChannel","집계"],["slack:__biz","SlackChannel","집계"],["slack:__product","SlackChannel","집계"],["slack:__rd","SlackChannel","집계"],
+      ["gcal:Business","CalendarEvent",""],["gdrive:덱","ExternalSource",""],["github:RLWRLD","ExternalSource",""]];
+    SRC.forEach(s=>N(s[0],"sources",s[1],s[2]));
+    L("경쟁 파이프라인","Benchmark 주간리포트","emits"); L("경쟁 파이프라인","slack:news","reads");
+    L("VLab 회의록DB","RP:ResearchEng","feeds"); L("Platform Team","Prod:RRC","feeds");
+    L("FUJI RX","slack:proj-rx-fuji","discussedIn"); L("CJL RX","slack:proj-rx-cjl","discussedIn"); L("ANA GH RX","slack:proj-rx-ana","discussedIn");
+    L("국책:GITCC-MAX","slack:natl","discussedIn"); L("VLab:ALINLAB","slack:vlab","discussedIn"); L("SI Progress DB","BD status","relatedTo");
+    L("gdrive:덱","Deck:IR4.2.1","holds"); L("github:RLWRLD","Prod:RRC","holds");
+
+    N("Align:VLab-Product","strategy","AlignmentTopic","가상랩↔제품팀 시너지");
+    N("Align:KR-JP","strategy","AlignmentTopic","한일 정렬");
+    N("Act:CBO우선순위","strategy","ActionItem","CBO 개인 항목");
+    L("Align:VLab-Product","Unit:ProductTeam","betweenUnits"); L("Align:VLab-Product","VLab:ALINLAB","betweenUnits"); L("Align:VLab-Product","Act:CBO우선순위","resolvedBy");
+    L("Align:KR-JP","Unit:Japan","betweenUnits"); L("Align:KR-JP","Unit:BizStrategy","betweenUnits");
+  })();
+  // 클래스(타입) 앵커 + instanceOf 링크 — "타입 노드 표시" 토글로만 켜짐(기본 꺼짐).
+  // 각 개체가 자기 클래스로 'is a' 점선을 뻗어 Account/Competitor/Industry/… 부모 노드가 등장.
+  (function(){
+    const inst=INST_NODES.slice(), clsDom={};
+    inst.forEach(n=>{ const c=n[2]; if(c && !clsDom[c]) clsDom[c]=n[1]; });   // 클래스 → (첫 개체의)도메인 색
+    Object.keys(clsDom).forEach(c=>INST_NODES.push(["◆ "+c, clsDom[c], c, "클래스(타입) — instanceOf 부모", 1]));
+    inst.forEach(n=>{ if(n[2]) INST_LINKS.push([n[0], "◆ "+n[2], "is a", 0, 1]); });   // [s,t,rel,isa,instanceOf]
+  })();
+
+  function build(nodesRaw, linksRaw, schema){
+    const nodes = nodesRaw.map((n,i)=>({
+      id:n[0], label:schema?n[0]:n[0], domain:n[1],
+      cls: schema?null:n[2], desc: schema?n[2]:n[3], isClass: schema?false:!!n[4],
+      x:0,y:0,vx:0,vy:0, fx:null,fy:null, deg:0
+    }));
+    const byId={}; nodes.forEach(n=>byId[n.id]=n);
+    const links=[];
+    linksRaw.forEach(l=>{
+      const s=byId[l[0]], t=byId[l[1]];
+      if(!s||!t) return;
+      const inst=!!l[4];
+      links.push({s,t,rel:l[2]||"", isa:!!l[3], instanceOf:inst});
+      if(inst){ t.deg++; }          // instanceOf는 클래스 노드 크기에만 반영(개체 크기 왜곡 방지)
+      else { s.deg++; t.deg++; }
+    });
+    return {nodes,links,byId};
+  }
+  const GRAPHS = {
+    schema: build(SCHEMA_NODES, SCHEMA_LINKS, true),
+    instance: build(INST_NODES, INST_LINKS, false)
+  };
+
+  // ---------- canvas / render ----------
+  const cv=document.getElementById("cv"), ctx=cv.getContext("2d");
+  let W=0,H=0,DPR=1;
+  let view="schema", G=GRAPHS.schema;
+  let tf={s:1,x:0,y:0};
+  let hoverN=null, selN=null;
+  const hiddenDom=new Set();
+  let showTypes=false;   // "타입(클래스) 노드 표시" 토글 (인스턴스 뷰)
+  let alpha=1, running=true, rafId=null;
+  function nodeActive(n){ if(hiddenDom.has(n.domain)) return false; if(n.isClass && !showTypes) return false; return true; }
+  function linkActive(l){ if(l.instanceOf && !showTypes) return false; return nodeActive(l.s)&&nodeActive(l.t); }
+
+  function resize(){
+    DPR=Math.min(window.devicePixelRatio||1,2);
+    const r=cv.getBoundingClientRect(); W=r.width; H=r.height;
+    cv.width=W*DPR; cv.height=H*DPR; ctx.setTransform(DPR,0,0,DPR,0,0);
+    kick();
+  }
+  function seed(){
+    const cx=W/2, cy=H/2, R=Math.min(W,H)*0.34;
+    G.nodes.forEach((n,i)=>{
+      const a=i/G.nodes.length*Math.PI*2;
+      n.x=cx+Math.cos(a)*R*(0.6+0.5*Math.random());
+      n.y=cy+Math.sin(a)*R*(0.6+0.5*Math.random());
+      n.vx=0;n.vy=0;n.fx=null;n.fy=null;
+    });
+    tf={s:1,x:0,y:0};
+  }
+  // 버블 크기 = 연결 수(degree)에 비례. 제곱근 스케일로 허브가 확실히 커진다.
+  function radius(n){ return (view==="schema"?5.5:4) + Math.sqrt(n.deg)*(view==="schema"?2.2:2.7); }
+
+  function step(){
+    const cx=W/2, cy=H/2;
+    const N=G.nodes.filter(nodeActive);   // 숨긴 클래스 노드는 물리 계산에서 제외
+    const many=N.length>60;
+    // 여유 있는 배치 + 허브 분리: 반발력을 degree('전하')에 비례시켜 연결 많은 노드끼리 더 멀어지게, 중력은 약하게
+    const REP=many?900:1600, GRAV=many?0.006:0.004, SPRINGL=many?150:150;
+    // repulsion (charge-weighted)
+    for(let i=0;i<N.length;i++){
+      const a=N[i], ca=1+a.deg*0.16;
+      for(let j=i+1;j<N.length;j++){
+        const b=N[j];
+        let dx=a.x-b.x, dy=a.y-b.y, d2=dx*dx+dy*dy;
+        if(d2<1)d2=1;
+        const d=Math.sqrt(d2);
+        const f=REP*ca*(1+b.deg*0.16)/d2;
+        const fx=dx/d*f, fy=dy/d*f;
+        a.vx+=fx; a.vy+=fy; b.vx-=fx; b.vy-=fy;
+      }
+    }
+    // springs (허브에 매달린 링크는 조금 더 길게)
+    G.links.forEach(l=>{
+      if(!linkActive(l)) return;
+      const hub=Math.max(l.s.deg,l.t.deg);
+      const L=(l.isa||l.instanceOf)?90:(SPRINGL+Math.min(hub,20)*4);
+      let dx=l.t.x-l.s.x, dy=l.t.y-l.s.y, d=Math.sqrt(dx*dx+dy*dy)||1;
+      const f=(d-L)*0.035;
+      const fx=dx/d*f, fy=dy/d*f;
+      l.s.vx+=fx; l.s.vy+=fy; l.t.vx-=fx; l.t.vy-=fy;
+    });
+    // gravity + integrate
+    N.forEach(n=>{
+      n.vx+=(cx-n.x)*GRAV; n.vy+=(cy-n.y)*GRAV;
+      if(n.fx!=null){ n.x=n.fx; n.y=n.fy; n.vx=0; n.vy=0; return; }
+      n.vx*=0.86; n.vy*=0.86;
+      const sp=Math.hypot(n.vx,n.vy), max=18;
+      if(sp>max){ n.vx=n.vx/sp*max; n.vy=n.vy/sp*max; }
+      n.x+=n.vx*alpha*1.6; n.y+=n.vy*alpha*1.6;
+    });
+    alpha*=0.985;
+  }
+
+  function toScreen(n){ return [n.x*tf.s+tf.x, n.y*tf.s+tf.y]; }
+  function neighborsOf(n){
+    const set=new Set([n]);
+    G.links.forEach(l=>{ if(l.s===n)set.add(l.t); if(l.t===n)set.add(l.s); });
+    return set;
+  }
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    const focus = selN||hoverN;
+    const nbr = focus?neighborsOf(focus):null;
+    const isDim = n => (hiddenDom.has(n.domain)) || (focus && !nbr.has(n));
+
+    // edges
+    G.links.forEach(l=>{
+      if(!linkActive(l)) return;
+      const dashed = l.isa || l.instanceOf;
+      const active = focus && (l.s===focus||l.t===focus);
+      const dim = focus && !active;
+      const [sx,sy]=toScreen(l.s), [tx,ty]=toScreen(l.t);
+      ctx.beginPath();
+      ctx.moveTo(sx,sy); ctx.lineTo(tx,ty);
+      ctx.strokeStyle = active?domColor(l.s.domain):(dashed?cssv("--edge-isa"):cssv("--edge"));
+      ctx.globalAlpha = dim?0.12:(active?0.9:(l.instanceOf?0.35:0.5));
+      ctx.lineWidth = active?2:1;
+      if(dashed){ ctx.setLineDash([4,4]); } else { ctx.setLineDash([]); }
+      ctx.stroke();
+      ctx.setLineDash([]);
+      // arrowhead + rel label on active
+      if(active && !dashed){
+        const ang=Math.atan2(ty-sy,tx-sx), r=radius(l.t)*tf.s+3;
+        const ax=tx-Math.cos(ang)*r, ay=ty-Math.sin(ang)*r, hd=7;
+        ctx.globalAlpha=0.95; ctx.fillStyle=domColor(l.s.domain);
+        ctx.beginPath();
+        ctx.moveTo(ax,ay);
+        ctx.lineTo(ax-Math.cos(ang-0.5)*hd, ay-Math.sin(ang-0.5)*hd);
+        ctx.lineTo(ax-Math.cos(ang+0.5)*hd, ay-Math.sin(ang+0.5)*hd);
+        ctx.closePath(); ctx.fill();
+        if(l.rel){
+          const mx=(sx+tx)/2, my=(sy+ty)/2;
+          ctx.font="600 11px "+cssv("--font-mono");
+          const w=ctx.measureText(l.rel).width;
+          ctx.globalAlpha=0.95; ctx.fillStyle=cssv("--surface");
+          ctx.fillRect(mx-w/2-4,my-8,w+8,16);
+          ctx.fillStyle=cssv("--ink"); ctx.textAlign="center"; ctx.textBaseline="middle";
+          ctx.fillText(l.rel,mx,my);
+        }
+      }
+    });
+    ctx.globalAlpha=1;
+
+    // nodes
+    const many=G.nodes.length>60;
+    const labelDegCut = many?7:(view==="schema"?6:4);
+    const showAllLabels = (!many && tf.s>0.9) || tf.s>1.5;
+    G.nodes.forEach(n=>{
+      if(!nodeActive(n)) return;
+      const [x,y]=toScreen(n); const r=radius(n)*tf.s;
+      const dim=isDim(n);
+      ctx.globalAlpha=dim?0.2:1;
+      ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2);
+      ctx.fillStyle=domColor(n.domain); ctx.fill();
+      // 클래스(타입) 앵커는 흰 테두리를 굵게 + 점선 느낌으로 구분
+      ctx.lineWidth=(n===focus)?3:(n.isClass?2.5:1.5);
+      ctx.strokeStyle=(n===focus)?cssv("--ink"):(n.isClass?cssv("--ink-soft"):cssv("--surface"));
+      ctx.stroke();
+      // label
+      const lab = n.label;
+      const showLabel = !dim && (showAllLabels || n===focus || (nbr&&nbr.has(n)) || n.deg>=labelDegCut);
+      if(showLabel){
+        ctx.font=(n===focus?"700 ":"500 ")+ (view==="schema"?"12px ":"11.5px ")+cssv("--font-sans");
+        ctx.textAlign="left"; ctx.textBaseline="middle";
+        const tx=x+r+4;
+        ctx.globalAlpha=dim?0.25:1;
+        ctx.fillStyle=cssv("--ink");
+        ctx.fillText(lab, tx, y);
+      }
+    });
+    ctx.globalAlpha=1;
+  }
+
+  function loop(){
+    if(alpha>0.02){ step(); }
+    draw();
+    if(alpha>0.02 || running===false){}
+    rafId=requestAnimationFrame(loop);
+  }
+  function kick(){ alpha=Math.max(alpha,0.5); }
+
+  // ---------- interaction ----------
+  let drag=null, panning=null;
+  function nodeAt(px,py){
+    for(let i=G.nodes.length-1;i>=0;i--){
+      const n=G.nodes[i]; if(!nodeActive(n))continue;
+      const [x,y]=toScreen(n); const r=radius(n)*tf.s+4;
+      if((px-x)**2+(py-y)**2<=r*r) return n;
+    }
+    return null;
+  }
+  function evtPos(e){ const r=cv.getBoundingClientRect(); return [e.clientX-r.left, e.clientY-r.top]; }
+
+  cv.addEventListener("pointerdown",e=>{
+    cv.setPointerCapture(e.pointerId);
+    const [px,py]=evtPos(e); const n=nodeAt(px,py);
+    if(n){ drag={n, ox:0, oy:0}; n.fx=n.x; n.fy=n.y; cv.classList.add("grabbing"); }
+    else { panning={px,py,tx:tf.x,ty:tf.y}; cv.classList.add("grabbing"); }
+  });
+  cv.addEventListener("pointermove",e=>{
+    const [px,py]=evtPos(e);
+    if(drag){ drag.n.fx=(px-tf.x)/tf.s; drag.n.fy=(py-tf.y)/tf.s; kick(); }
+    else if(panning){ tf.x=panning.tx+(px-panning.px); tf.y=panning.ty+(py-panning.py); }
+    else {
+      const n=nodeAt(px,py);
+      if(n!==hoverN){ hoverN=n; cv.style.cursor=n?"pointer":"grab"; }
+    }
+  });
+  function endPtr(e){
+    if(drag){ drag.n.fx=null; drag.n.fy=null; drag=null; }
+    panning=null; cv.classList.remove("grabbing");
+  }
+  cv.addEventListener("pointerup",e=>{
+    const [px,py]=evtPos(e);
+    if(drag && Math.hypot(drag.n.x-((px-tf.x)/tf.s), drag.n.y-((py-tf.y)/tf.s))<3){
+      selectNode(drag.n);
+    } else if(!drag && panning && Math.hypot(px-panning.px,py-panning.py)<3){
+      const n=nodeAt(px,py); selectNode(n);
+    }
+    endPtr(e);
+  });
+  cv.addEventListener("pointercancel",endPtr);
+  cv.addEventListener("wheel",e=>{
+    e.preventDefault();
+    const [px,py]=evtPos(e);
+    const f=Math.exp(-e.deltaY*0.0016);
+    const ns=Math.max(0.35,Math.min(3,tf.s*f));
+    tf.x=px-(px-tf.x)*(ns/tf.s); tf.y=py-(py-tf.y)*(ns/tf.s); tf.s=ns;
+  },{passive:false});
+
+  // ---------- detail panel ----------
+  const dEl=document.getElementById("detail");
+  function selectNode(n){
+    selN=n;
+    if(!n){ dEl.classList.remove("show"); return; }
+    document.getElementById("dkind").textContent=(view==="schema"?"클래스":(n.isClass?"클래스(타입) 앵커":(n.cls||"인스턴스")));
+    document.getElementById("dkind").style.color=domColor(n.domain);
+    document.getElementById("dname").textContent=n.label;
+    document.getElementById("ddesc").textContent=n.desc||"";
+    const out=[],inc=[];
+    G.links.forEach(l=>{
+      if(!linkActive(l)) return;
+      if(l.s===n) out.push(l);
+      else if(l.t===n) inc.push(l);
+    });
+    let html="";
+    if(out.length){
+      html+='<div class="rel-h">이 노드가 가리키는 관계</div>';
+      out.forEach(l=>{ html+=rowHTML(l.rel||(l.isa?"is-a":""), l.t, l.isa); });
+    }
+    if(inc.length){
+      html+='<div class="rel-h">이 노드를 가리키는 관계</div>';
+      inc.forEach(l=>{ html+=rowHTML(l.rel||(l.isa?"is-a":""), l.s, l.isa, true); });
+    }
+    document.getElementById("drels").innerHTML=html;
+    dEl.classList.add("show");
+  }
+  function rowHTML(rel,other,isa,incoming){
+    const arrow=incoming?"←":"→";
+    const relTxt=isa?"is-a":rel;
+    return '<div class="rel"><span class="rn">'+arrow+' '+relTxt+'</span>'+
+           '<span class="rt">'+other.label+'</span></div>';
+  }
+  document.getElementById("dclose").addEventListener("click",()=>{selN=null;dEl.classList.remove("show");});
+
+  // ---------- controls ----------
+  document.querySelectorAll("#viewToggle button").forEach(b=>{
+    b.addEventListener("click",()=>{
+      document.querySelectorAll("#viewToggle button").forEach(x=>x.classList.remove("on"));
+      b.classList.add("on");
+      view=b.dataset.v; G=GRAPHS[view]; selN=null; hoverN=null; dEl.classList.remove("show");
+      seed(); alpha=1; updCount();
+    });
+  });
+  document.getElementById("resetBtn").addEventListener("click",()=>{ seed(); alpha=1; selN=null; dEl.classList.remove("show"); });
+  document.getElementById("typeToggle").addEventListener("change",e=>{
+    showTypes=e.target.checked; selN=null; hoverN=null; dEl.classList.remove("show"); kick(); updCount();
+  });
+
+  function updCount(){
+    const nn=G.nodes.filter(nodeActive).length;
+    const ll=G.links.filter(linkActive).length;
+    document.getElementById("cnt").textContent=nn+"개 노드 · "+ll+"개 관계";
+  }
+  // legend
+  const legEl=document.getElementById("legend");
+  Object.keys(DOMAINS).forEach(d=>{
+    const el=document.createElement("div"); el.className="lg";
+    el.innerHTML='<span class="sw" style="background:'+domColor(d)+'"></span>'+DOMAINS[d].ko;
+    el.addEventListener("click",()=>{
+      if(hiddenDom.has(d)){hiddenDom.delete(d);el.classList.remove("off");}
+      else{hiddenDom.add(d);el.classList.add("off");}
+    });
+    legEl.appendChild(el);
+  });
+
+  window.addEventListener("resize",resize);
+  // theme change repaint (colors are read live, so just ensure a repaint happens)
+  window.matchMedia("(prefers-color-scheme:dark)").addEventListener("change",()=>{});
+
+  // ---------- expose API for the query console tab ----------
+  window.RLWRLD = {
+    DOMAINS: DOMAINS,
+    data: function(){ return GRAPHS.instance; },
+    refresh: function(){ resize(); kick(); },
+    focusInstance: function(id){
+      document.querySelectorAll("#viewToggle button").forEach(function(x){ x.classList.toggle("on", x.dataset.v==="instance"); });
+      view="instance"; G=GRAPHS.instance; hoverN=null; seed(); alpha=1; updCount();
+      resize();
+      var n=G.byId[id]; if(n) selectNode(n);
+    }
+  };
+
+  resize(); seed(); updCount(); loop();
+})();
+</script>

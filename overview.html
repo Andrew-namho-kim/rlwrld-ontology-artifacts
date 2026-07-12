@@ -134,10 +134,11 @@
     <p class="lede">리얼월드의 사업·기술·고객·경쟁을 하나의 온톨로지(명사=클래스, 동사=관계)로 옮겨,
       CBO Agent가 "지금 무슨 일이 벌어지고 있고 무엇을 챙겨야 하는지"를 스스로 읽어낼 수 있게 만드는 프로젝트입니다.</p>
     <div class="status">
-      <span class="chip"><b>9</b> 도메인 · <b>36</b> 클래스</span>
+      <span class="chip"><b>9</b> 도메인 · <b>40</b> 클래스</span>
       <span class="chip">딜 <b>46</b> · 경쟁사 <b>33</b> · 국책 <b>17</b> · 가상랩 <b>6</b></span>
-      <span class="chip">우리 모델 <b>4</b> · 회의록 <b>77</b> · Person <b>113</b></span>
-      <span class="chip">Phase 1–4 완료 · 스키마 <b>v0.2</b></span>
+      <span class="chip">회의록 <b>77</b> · Person <b>113</b> · 뉴스 <b>51</b></span>
+      <span class="chip">의사결정 <b>212</b> · 실행항목 <b>404</b></span>
+      <span class="chip">스키마 <b>v0.3</b> · 총 <b>1,188</b> 노드</span>
     </div>
   </header>
 
@@ -149,13 +150,16 @@
     </div>
     <div class="phases">
       <div class="ph"><span class="n">PHASE 1</span><h3>범위·용어</h3><p>역량질문 46개, 슬랙 62채널·노션 구조 스캔, 용어집. 온톨로지가 답해야 할 질문을 먼저 정의.</p><span class="done">완료</span></div>
-      <div class="ph"><span class="n">PHASE 2</span><h3>스키마 설계</h3><p>9개 도메인·36개 클래스, 속성·관계·제약. 역량질문으로 검증.</p><span class="done">완료</span></div>
+      <div class="ph"><span class="n">PHASE 2</span><h3>스키마 설계</h3><p>9개 도메인·40개 클래스, 속성·관계·제약. 역량질문으로 검증.</p><span class="done">완료</span></div>
       <div class="ph"><span class="n">PHASE 3</span><h3>인스턴스 채우기</h3><p>SI Progress DB에서 딜 46건 실측, 경쟁사·국책·가상랩·우리 모델·데이터소스 populate.</p><span class="done">완료</span></div>
       <div class="ph"><span class="n">PHASE 4</span><h3>Data·Logic·Action</h3><p>원천→클래스 파이프라인, Agent setup 로직화, 주간 브리핑 자동화 1호 데모.</p><span class="done">완료</span></div>
     </div>
     <p class="note" style="margin-top:16px">함께 만든 것: <a href="https://claude.ai/code/artifact/093305eb-d524-455e-8994-f588abfcd400" target="_blank" rel="noopener">Data·Logic·Action 구조 설명 페이지</a>, <a href="https://claude.ai/code/artifact/e7b69b5c-b197-4626-a728-4904cf6461ab" target="_blank" rel="noopener">인터랙티브 지식 그래프</a>(스키마·인스턴스 두 뷰 + 타입 토글), 그리고 이 개요 페이지.</p>
     <div class="callout" style="border-left-color:var(--d-tech)">
-      <b style="color:var(--d-tech)">2026-07-10 갱신.</b> 데이터 무결성 정리(중복키·깨진 참조·경쟁사 이중계수 62→33 수정), 우리 <span class="tok">Model</span> 4건 populate(G0·RLDX 1→1.1·RFM Backbone·World Model, <span class="tok">comparableTo</span>로 경쟁사와 비교축), 내부 모델·연구 회의록 32건 인스턴스화(총 77건), Person 113명. 역량질문 46개 답변 상태: ✅ 18 · 🟡 16 · 🔴 12.
+      <b style="color:var(--d-tech)">2026-07-10 갱신.</b> 데이터 무결성 정리(중복키·깨진 참조·경쟁사 이중계수 62→33 수정), 우리 모델 4건 populate(G0·RLDX·RFM Backbone·World Model), 내부 모델·연구 회의록 32건 인스턴스화(총 77건), Person 113명. 역량질문 46개 답변 상태: ✅ 18 · 🟡 16 · 🔴 12.
+    </div>
+    <div class="callout" style="border-left-color:var(--d-strategy)">
+      <b style="color:var(--d-strategy)">2026-07-12 갱신 — 의사결정층 신설.</b> 전략·실행 도메인에 <span class="tok">Decision</span> 클래스를 추가(스키마 v0.3)하고, 흩어진 회의록·슬랙에서 <b>의사결정 212건</b>을 추출·적대검증해 인스턴스화. 각 결정의 하류 <span class="tok">ActionItem</span>은 <b>404건</b>으로 확장(<span class="tok">derivedFrom</span>으로 근거 연결). 함께 비어 있던 <span class="tok">Investor</span> 13 · <span class="tok">UseCase</span> 11 · <span class="tok">Industry</span> 6 · <span class="tok">Publication</span> 3 · <span class="tok">PREvent</span> 2 · <span class="tok">OperationIssue</span> 2 를 채워 <b>총 1,188 인스턴스</b>. Model 계열은 배포 실모델(<span class="tok">Model</span>)·릴리스(<span class="tok">ModelRelease</span>)·연구트랙(<span class="tok">ResearchTrack</span>)으로 세분화. 남은 공백은 RecruitingPosition(HR 권한)·AlignmentTopic(로직 파이프라인).
     </div>
   </section>
 
@@ -191,7 +195,7 @@
   <section>
     <div class="sec-head">
       <span class="eyebrow">클래스 레퍼런스</span>
-      <h2>9개 도메인 · 36개 클래스 (v0.2)</h2>
+      <h2>9개 도메인 · 40개 클래스 (v0.3)</h2>
       <p class="note">각 도메인을 눌러 펼치면 클래스와 설명이 나옵니다. 색은 지식 그래프와 동일합니다.</p>
     </div>
 
@@ -217,17 +221,19 @@
       <summary><span class="bar" style="background:var(--d-market)"></span><span class="dh">⑤ 고객·시장 (market)</span><span class="dc">수요 · 3</span><span class="caret">›</span></summary>
       <div class="clist">
         <div class="cl"><span class="cn" style="color:var(--d-market)">Account</span><span class="cd"><b>고객·수요 기업</b> (우리 제품·서비스의 수요 주체). 노션 "(Root)" 페이지와 1:1. <span class="k">physicalAIInterest</span>로 관심 표출 추적. ※파트너·투자자 제외</span></div>
-        <div class="cl"><span class="cn" style="color:var(--d-market)">Industry</span><span class="cd">산업 분류(물류·제조·유통·항공·의료·국방 등). 고객을 산업별로 묶는 축</span></div>
-        <div class="cl"><span class="cn" style="color:var(--d-market)">UseCase</span><span class="cd">로봇 적용 use case(피킹·조립·검수 등). 산업과 데모·딜을 잇는 단위</span></div>
+        <div class="cl"><span class="cn" style="color:var(--d-market)">Industry</span><span class="cd">산업 분류 <b>6건</b>(물류·제조·유통·항공·의료·국방 등). 고객을 산업별로 묶는 축</span></div>
+        <div class="cl"><span class="cn" style="color:var(--d-market)">UseCase</span><span class="cd">로봇 적용 use case <b>11건</b>(피킹·조립·검수 등). 산업과 데모·딜을 잇는 단위</span></div>
       </div>
     </details>
 
     <details class="dom">
-      <summary><span class="bar" style="background:var(--d-tech)"></span><span class="dh">③ 기술 (tech)</span><span class="dc">6</span><span class="caret">›</span></summary>
+      <summary><span class="bar" style="background:var(--d-tech)"></span><span class="dh">③ 기술 (tech)</span><span class="dc">8</span><span class="caret">›</span></summary>
       <div class="clist">
         <div class="cl"><span class="cn" style="color:var(--d-tech)">ResearchProject</span><span class="cd">내부·가상랩 연구 과제. 슬랙 연구 서브그룹 채널과 대응 (faster-vla, rfm-backbone 등)</span></div>
         <div class="cl"><span class="cn" style="color:var(--d-tech)">Product</span><span class="cd">제품·제품화 자산. RRC(표준 로봇 플랫폼)·RLDX(플래그십 VLA)·Dex Bench·EaaS</span></div>
-        <div class="cl"><span class="cn" style="color:var(--d-tech)">Model</span><span class="cd">내부 개발 AI 모델(RFM·VLA 계열). <span class="k">4건 populate: G0·RLDX 1.1·RFM Backbone·World Model</span> · <span class="k">comparableTo → Competitor</span></span></div>
+        <div class="cl"><span class="cn" style="color:var(--d-tech)">Model</span><span class="cd">배포·평가 대상의 실제 AI 모델(RFM·VLA 계열). 예: RLDX-1 · <span class="k">comparableTo → Competitor</span></span></div>
+        <div class="cl"><span class="cn" style="color:var(--d-tech)">ModelRelease</span><span class="cd">모델의 배포·릴리스 단위(버전·PoC 실배포 추적). 예: G0 (BMW PoC 실배포, RRC 위 구동)</span></div>
+        <div class="cl"><span class="cn" style="color:var(--d-tech)">ResearchTrack</span><span class="cd">단일 배포모델이 아닌 백본·연구 트랙. 예: RFM Backbone · World Model(G1). 서브그룹 ResearchProject를 묶음</span></div>
         <div class="cl"><span class="cn" style="color:var(--d-tech)">Dataset</span><span class="cd">학습 데이터(Human·Teleop·Synthetic·Neural Trajectory). 예: HRDexDB</span></div>
         <div class="cl"><span class="cn" style="color:var(--d-tech)">Hardware</span><span class="cd">로봇 HW(핸드·암·센서·베이스). Allex·OpenArm·RBY1·Tesollo·Wuji·Inspire</span></div>
         <div class="cl"><span class="cn" style="color:var(--d-tech)">TechArea</span><span class="cd">기술 관심 영역(Dexterity·cloud RFM·tactile 등). <span class="k">focusLevel</span>로 워칭 강도</span></div>
@@ -238,9 +244,9 @@
       <summary><span class="bar" style="background:var(--d-ecosystem)"></span><span class="dh">④ 경쟁·생태계 (ecosystem)</span><span class="dc">4</span><span class="caret">›</span></summary>
       <div class="clist">
         <div class="cl"><span class="cn" style="color:var(--d-ecosystem)">Competitor</span><span class="cd">경쟁·생태계 업체 <b>33개사</b>. <span class="k">competitorType</span>(9종)로 분류, <span class="k">priorityLevel</span>(P0~P2)로 워칭 강도, <span class="k">competesWith</span>는 겹치는 사업 라인에만</span></div>
-        <div class="cl"><span class="cn" style="color:var(--d-ecosystem)">Investor</span><span class="cd">VC·CVC·투자자(자사 투자자 + 경쟁사 백커). <b>Account가 아닌 독립 클래스</b></span></div>
-        <div class="cl"><span class="cn" style="color:var(--d-ecosystem)">NewsItem</span><span class="cd">외부 뉴스·발표·투자 소식 한 건(51건). <span class="k">implication</span>에 우리 전략 시사점</span></div>
-        <div class="cl"><span class="cn" style="color:var(--d-ecosystem)">Publication</span><span class="cd">논문·블로그·기술 문서(외부 경쟁사 + 내부 Biz paper, origin으로 구분)</span></div>
+        <div class="cl"><span class="cn" style="color:var(--d-ecosystem)">Investor</span><span class="cd">VC·CVC·투자자 <b>13곳</b>(자사 투자자 + 경쟁사 백커). <b>Account가 아닌 독립 클래스</b></span></div>
+        <div class="cl"><span class="cn" style="color:var(--d-ecosystem)">NewsItem</span><span class="cd">외부 뉴스·발표·투자 소식 한 건(<b>51건</b>). <span class="k">implication</span>에 우리 전략 시사점</span></div>
+        <div class="cl"><span class="cn" style="color:var(--d-ecosystem)">Publication</span><span class="cd">논문·블로그·기술 문서 <b>3건</b>(외부 경쟁사 + 내부 Biz paper, origin으로 구분)</span></div>
       </div>
     </details>
 
@@ -260,7 +266,7 @@
       <div class="clist">
         <div class="cl"><span class="cn" style="color:var(--d-comms)">Narrative</span><span class="cd">핵심 메시지 체계(tech/biz × 투자자·고객·내부·언론). 주간 변화 추적</span></div>
         <div class="cl"><span class="cn" style="color:var(--d-comms)">Deck</span><span class="cd">발표 자료(투자유치·보드·고객제안·국책). 페이지별 back-up 연결</span></div>
-        <div class="cl"><span class="cn" style="color:var(--d-comms)">PREvent</span><span class="cd">PR·행사·학회(launch event·Humanoids Summit·CES·GTC 등)</span></div>
+        <div class="cl"><span class="cn" style="color:var(--d-comms)">PREvent</span><span class="cd">PR·행사·학회 <b>2건</b>(launch event·Humanoids Summit·CES·GTC 등)</span></div>
       </div>
     </details>
 
@@ -277,9 +283,10 @@
     </details>
 
     <details class="dom">
-      <summary><span class="bar" style="background:var(--d-strategy)"></span><span class="dh">⑨ 전략·실행 (strategy)</span><span class="dc">2</span><span class="caret">›</span></summary>
+      <summary><span class="bar" style="background:var(--d-strategy)"></span><span class="dh">⑨ 전략·실행 (strategy)</span><span class="dc">3</span><span class="caret">›</span></summary>
       <div class="clist">
-        <div class="cl"><span class="cn" style="color:var(--d-strategy)">ActionItem</span><span class="cd">도출된 실행 항목(CBO 개인 우선순위 포함). <span class="k">derivedFrom</span>으로 근거 연결</span></div>
+        <div class="cl"><span class="cn" style="color:var(--d-strategy)">Decision</span><span class="cd">회의·슬랙에서 내려진 의사결정 <b>212건</b>(1급 노드). <span class="k">decisionType(Accept/Reject/Defer/Explore)·summary·rationale·roadmapImpact·status</span> · <span class="k">resultsIn → ActionItem</span></span></div>
+        <div class="cl"><span class="cn" style="color:var(--d-strategy)">ActionItem</span><span class="cd">도출된 실행 항목 <b>404건</b>(CBO 개인 우선순위 포함). <span class="k">derivedFrom → Decision</span>으로 근거 연결</span></div>
         <div class="cl"><span class="cn" style="color:var(--d-strategy)">AlignmentTopic</span><span class="cd">부서간·전사·가상랩↔제품팀 사이 맞춰야 할 영역. <span class="k">betweenUnits·evidence·resolvedBy</span></span></div>
       </div>
     </details>
@@ -287,7 +294,7 @@
     <details class="dom">
       <summary><span class="bar" style="background:var(--d-ops)"></span><span class="dh">⑦ 운영 (ops)</span><span class="dc">2</span><span class="caret">›</span></summary>
       <div class="clist">
-        <div class="cl"><span class="cn" style="color:var(--d-ops)">OperationIssue</span><span class="cd">HR·재무·법무·보안 주요 사안 (예: GR00T Eagle VLM 라이선스 이슈)</span></div>
+        <div class="cl"><span class="cn" style="color:var(--d-ops)">OperationIssue</span><span class="cd">HR·재무·법무·보안 주요 사안 <b>2건</b> (예: GR00T Eagle VLM 라이선스, LG이노텍 화이트박스)</span></div>
         <div class="cl"><span class="cn" style="color:var(--d-ops)">RecruitingPosition</span><span class="cd">채용 포지션·파이프라인(지원자·인터뷰 통과)</span></div>
       </div>
     </details>
@@ -342,7 +349,7 @@
 
   <footer>
     <div class="wrap" style="padding:0">
-      RLWRLD Business Digital Twin Ontology · 프로젝트 개요 · 2026-07-10 · 스키마 v0.2
+      RLWRLD Business Digital Twin Ontology · 프로젝트 개요 · 2026-07-12 · 스키마 v0.3
       <div class="links">
         <a href="https://claude.ai/code/artifact/093305eb-d524-455e-8994-f588abfcd400" target="_blank" rel="noopener">DLA 구조 설명</a>
         <a href="https://claude.ai/code/artifact/e7b69b5c-b197-4626-a728-4904cf6461ab" target="_blank" rel="noopener">지식 그래프</a>

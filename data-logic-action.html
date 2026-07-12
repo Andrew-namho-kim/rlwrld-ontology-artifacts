@@ -236,10 +236,11 @@
       <div class="arrow" aria-hidden="true">→<div class="flow-verb">채운다</div></div>
       <div class="stage onto">
         <div class="st-top"><span class="st-ico">O</span><h3>Ontology</h3></div>
-        <p class="sm">9개 도메인 · 36개 클래스</p>
+        <p class="sm">9개 도메인 · 40개 클래스 · 1,188 노드</p>
         <ul>
           <li>딜 46 · 경쟁사 33 · 국책 17</li>
           <li>가상랩 6곳 · 어카운트 35곳 · 우리 모델 4</li>
+          <li>의사결정 212 · 실행항목 404</li>
           <li>회의록 77건 · Person 113명 · 출처·신선도 기록</li>
         </ul>
       </div>
@@ -574,7 +575,26 @@
 
       <!-- Strategy outputs -->
       <div class="scard str">
-        <div class="ch"><span class="cn">ActionItem</span></div>
+        <div class="ch"><span class="cn">Decision</span><span class="br">전략·실행 · 212건</span></div>
+        <div class="role2">회의·슬랙에서 실제로 내려진 의사결정. "무엇을 정했나"를 담는 1급 노드이고, 하류의 할 일은 ActionItem으로 분리합니다.</div>
+        <div class="flh">데이터 속성</div>
+        <div class="fl">
+          <div class="fr"><span class="fn">decisionType</span><span class="ft"><span class="en">Accept / Reject / Defer / Explore</span></span></div>
+          <div class="fr"><span class="fn">summary · rationale</span><span class="ft">결정 내용·근거</span></div>
+          <div class="fr"><span class="fn">roadmapImpact</span><span class="ft">로드맵 영향</span></div>
+          <div class="fr"><span class="fn">status</span><span class="ft"><span class="en">결정됨 / 번복 / 보류 …</span></span></div>
+        </div>
+        <div class="flh">관계</div>
+        <div class="fl">
+          <div class="fr rel"><span class="fn">→ owner</span><span class="ft">Person · 1 (결정 주도자)</span></div>
+          <div class="fr rel"><span class="fn">→ resultsIn</span><span class="ft">ActionItem · 다수</span></div>
+          <div class="fr rel"><span class="fn">→ evidence</span><span class="ft">DataSource · 근거 회의·채널</span></div>
+        </div>
+        <div class="ex"><b>예</b> · dec-rl-project-group-goals · Accept · 결정됨</div>
+      </div>
+
+      <div class="scard str">
+        <div class="ch"><span class="cn">ActionItem</span><span class="br">전략·실행 · 404건</span></div>
         <div class="role2">도출된 실행 항목. CBO 개인 우선순위도 여기에 담깁니다.</div>
         <div class="flh">데이터 속성</div>
         <div class="fl">
@@ -585,7 +605,7 @@
         <div class="flh">관계</div>
         <div class="fl">
           <div class="fr rel"><span class="fn">→ owner</span><span class="ft">Person · 1</span></div>
-          <div class="fr rel"><span class="fn">→ derivedFrom</span><span class="ft">근거 (뉴스·회의록 등)</span></div>
+          <div class="fr rel"><span class="fn">→ derivedFrom</span><span class="ft">Decision · 근거 결정·회의</span></div>
         </div>
       </div>
 
@@ -609,12 +629,13 @@
     <div class="restbox">
       <div class="flh">여기 그리지 않은 나머지 클래스 (같은 방식으로 구성)</div>
       <div class="chips">
-        <span class="tok cls">Model</span><span class="tok cls">Dataset</span><span class="tok cls">Hardware</span><span class="tok cls">TechArea</span>
+        <span class="tok cls">Model</span><span class="tok cls">ModelRelease</span><span class="tok cls">ResearchTrack</span><span class="tok cls">Dataset</span><span class="tok cls">Hardware</span><span class="tok cls">TechArea</span>
         <span class="tok cls">SlackChannel</span><span class="tok cls">NotionPage</span><span class="tok cls">CalendarEvent</span><span class="tok cls">Deck</span>
         <span class="tok cls">Demo</span><span class="tok cls">UseCase</span><span class="tok cls">Industry</span>
         <span class="tok cls">Person</span><span class="tok cls">Professor</span><span class="tok cls">OrganizationalUnit</span><span class="tok cls">TaskGroup</span><span class="tok cls">BusinessUnit</span>
         <span class="tok ext">Investor</span><span class="tok ext">Publication</span><span class="tok ext">ExternalSource</span>
         <span class="tok cls">PREvent</span><span class="tok cls">OperationIssue</span><span class="tok cls">RecruitingPosition</span>
+        <span class="tok str" style="background:var(--action-soft);border-color:var(--action-line);color:var(--action)">Decision</span>
       </div>
       <p class="note" style="margin-top:10px">파랑은 사내 데이터, 주황은 외부·경쟁 데이터입니다. 전체 스키마 원본은 로컬 <span class="tok" style="font-size:.7rem">20_schema/properties.yaml</span> 에 있습니다.</p>
     </div>
@@ -650,7 +671,7 @@
           <tr><td>5 · 연관 기술 <span class="tok" style="font-size:.66rem">파이프라인</span></td><td>TechArea (focusLevel)</td><td>관심 영역 확장</td><td>TechArea·NewsItem</td></tr>
           <tr><td>6 · 주요 경쟁사 기술</td><td>Competitor(P0) + Model 비교</td><td>모델 구조 대조 (Dexterity)</td><td>기술 비교 내러티브</td></tr>
           <tr><td>7 · 내부↔외부 전략</td><td>전 도메인 (competesWith)</td><td>종합 격차 분석</td><td>AlignmentTopic·ActionItem</td></tr>
-          <tr><td>8 · 이메일·캘린더</td><td>CalendarEvent·MeetingNote</td><td>아젠다 불명확·회의록 커버리지</td><td>데일리 브리핑·ActionItem</td></tr>
+          <tr><td>8 · 이메일·캘린더</td><td>CalendarEvent·MeetingNote</td><td>아젠다 불명확·회의록 커버리지·결정 수확</td><td>데일리 브리핑·Decision·ActionItem</td></tr>
           <tr><td>9 · 노션·슬랙 활성화</td><td>SlackChannel.activityLevel</td><td>기여·소비 정량화</td><td>활성화 리포트</td></tr>
           <tr><td>10 · 추가 Agent 제안</td><td>답 못 한 역량질문</td><td>공백 식별</td><td>새 setup 제안</td></tr>
           <tr><td>11 · 통합 제언</td><td>setup 1–10 결과물</td><td>거버넌스</td><td>업그레이드 로드맵</td></tr>
@@ -730,7 +751,7 @@
 
   <footer>
     <div class="wrap" style="padding:0">
-      RLWRLD Business Digital Twin Ontology · Data–Logic–Action 구조 설명 · 2026-07-10 ·
+      RLWRLD Business Digital Twin Ontology · Data–Logic–Action 구조 설명 · 2026-07-12 ·
       로컬 마스터 <span class="tok" style="font-size:.7rem">20_schema/</span> <span class="tok" style="font-size:.7rem">30_instances/</span> <span class="tok" style="font-size:.7rem">40_dla-mapping/</span> 와 노션 미러
     </div>
   </footer>

@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BSP Product Map — 26년 하반기</title>
+<style>
+  :root{
+    --bg:#f5f7fa; --surface:#ffffff; --surface-2:#eef1f6;
+    --ink:#141d2b; --ink-soft:#54627a; --ink-faint:#8b98ad; --line:#d6dce6;
+    --accent:#245fd0;
+    --live:#245fd0; --build:#0f9d63; --pilot:#c9821a; --wait-line:#9aa7bc;
+    --grid:#e4e9f1;
+    --font-sans:-apple-system,BlinkMacSystemFont,"Segoe UI","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+    --label-w:250px; --row-h:46px; --child-h:40px;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --bg:#0c1119; --surface:#141c27; --surface-2:#1b2430;
+      --ink:#e9eef5; --ink-soft:#97a5ba; --ink-faint:#6a788d; --line:#28323f;
+      --accent:#6fa4ff;
+      --live:#3f7fe6; --build:#15a56e; --pilot:#d99524; --wait-line:#5c6a80;
+      --grid:#1e2733;
+    }
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:var(--font-sans); line-height:1.45;
+    -webkit-font-smoothing:antialiased;
+    padding:clamp(20px,4vw,44px) clamp(14px,3vw,32px);
+  }
+  header{max-width:1040px; margin:0 auto 22px}
+  .eyebrow{font-size:11.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--accent); font-weight:700; margin:0 0 8px}
+  h1{font-size:clamp(21px,3.4vw,30px); line-height:1.15; margin:0 0 8px; text-wrap:balance}
+  .lede{color:var(--ink-soft); font-size:14.5px; margin:0; max-width:760px}
+
+  .legend{display:flex; flex-wrap:wrap; gap:16px 22px; margin:18px 0 0; align-items:center}
+  .lg{display:flex; align-items:center; gap:8px; font-size:12.5px; color:var(--ink-soft)}
+  .sw{width:26px; height:15px; border-radius:4px; flex:none}
+  .sw.live{background:var(--live)} .sw.build{background:var(--build)} .sw.pilot{background:var(--pilot)}
+  .sw.wait{background:transparent; border:1.6px dashed var(--wait-line)}
+
+  .scroll{max-width:1040px; margin:0 auto; overflow-x:auto; padding-bottom:6px}
+  .chart{min-width:760px; background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:6px 0 10px}
+
+  .row{display:grid; grid-template-columns:var(--label-w) repeat(4,1fr); align-items:center; height:var(--row-h)}
+  .row.child{height:var(--child-h)}
+  .row.head{height:42px}
+  .row + .row .p{border-top:1px solid var(--grid)}
+  .grp{border-top:1px solid var(--line)}
+  .grp:first-child{border-top:none}
+
+  .lab{padding:0 14px 0 16px; overflow:hidden}
+  .lab.child{padding-left:30px}
+  .lab .nm{font-weight:650; font-size:13.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+  .row.child .lab .nm{font-weight:500; font-size:12.8px}
+  .row.child .lab .nm::before{content:"└ "; color:var(--ink-faint); font-weight:400}
+  .lab .sub{font-size:10.7px; color:var(--ink-faint); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:1px}
+
+  .head .lab{font-size:11.5px; color:var(--ink-faint); font-weight:700; letter-spacing:.02em; text-transform:uppercase}
+  .head .h{padding:0 6px; text-align:center; font-size:12.5px; font-weight:650; color:var(--ink); box-shadow:inset 1px 0 0 var(--grid)}
+  .head .h small{display:block; font-size:10.3px; font-weight:500; color:var(--ink-faint); margin-top:1px}
+
+  .p{position:relative; height:100%; display:flex; align-items:center; box-shadow:inset 1px 0 0 var(--grid)}
+  .bar{height:24px; width:100%; display:flex; align-items:center; padding:0 9px; font-size:11px; font-weight:650; color:#fff; white-space:nowrap; overflow:hidden}
+  .row.child .bar{height:21px; font-size:10.5px}
+  .bar.live{background:var(--live)} .bar.build{background:var(--build)} .bar.pilot{background:var(--pilot)}
+  .bar.rl{border-top-left-radius:7px; border-bottom-left-radius:7px}
+  .bar.rr{border-top-right-radius:7px; border-bottom-right-radius:7px}
+  .bar.ghost{background:transparent; border:1.6px dashed var(--wait-line); color:var(--ink-faint); font-weight:600;
+             border-radius:7px; height:22px; margin:0 4px; width:calc(100% - 8px)}
+  .row.child .bar.ghost{height:19px}
+
+  footer{max-width:1040px; margin:16px auto 0; color:var(--ink-faint); font-size:11.8px; display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap}
+  .note{max-width:1040px; margin:14px auto 0; font-size:12px; color:var(--ink-soft)}
+  .note b{color:var(--ink)}
+</style>
+</head>
+<body>
+<header>
+  <p class="eyebrow">BSP Workshop · 26 H2 · S7</p>
+  <h1>BSP Product Map</h1>
+  <p class="lede">AI-native BSP Operating System을 구성하는 프로덕트를 세부 기능 단위로 분해하고, 가동 시점(Now → Q4)에 따라 배치했습니다. 막대 색은 상태, <b>점선 테두리는 선행 의존(아직 착수 전)</b>을 뜻합니다.</p>
+  <div class="legend">
+    <span class="lg"><span class="sw live"></span>가동 · 상시 유지</span>
+    <span class="lg"><span class="sw build"></span>구축</span>
+    <span class="lg"><span class="sw pilot"></span>파일럿 · 착수</span>
+    <span class="lg"><span class="sw wait"></span>대기 · 선행 의존</span>
+  </div>
+</header>
+
+<div class="scroll">
+<div class="chart">
+
+  <!-- time axis -->
+  <div class="row head">
+    <div class="lab">프로덕트 / 세부 기능</div>
+    <div class="h">Now<small>7월</small></div>
+    <div class="h">~D+14<small>7월 하순</small></div>
+    <div class="h">Q3<small>8–9월</small></div>
+    <div class="h">Q4<small>10–12월</small></div>
+  </div>
+
+  <!-- ===== 온톨로지 ===== -->
+  <div class="grp">
+    <div class="row">
+      <div class="lab"><div class="nm">온톨로지 (Core)</div><div class="sub">디지털 트윈 · 스키마 46/46 · 1,188 인스턴스</div></div>
+      <div class="p"><div class="bar live rl">가동 · 상시 유지</div></div>
+      <div class="p"><div class="bar live"></div></div>
+      <div class="p"><div class="bar live"></div></div>
+      <div class="p"><div class="bar live rr"></div></div>
+    </div>
+    <div class="row child">
+      <div class="lab child"><div class="nm">데이터 무결성·표준화</div><div class="sub">중복 스캔 · 엔티티 표준명 · Decision Log 실가동</div></div>
+      <div class="p"></div>
+      <div class="p"><div class="bar pilot rl">착수</div></div>
+      <div class="p"><div class="bar build">구축</div></div>
+      <div class="p"><div class="bar live rr">정례화</div></div>
+    </div>
+    <div class="row child">
+      <div class="lab child"><div class="nm">권한별 온톨로지</div><div class="sub">권한별 인풋 차등 · C-level 회의록 확보</div></div>
+      <div class="p"></div>
+      <div class="p"></div>
+      <div class="p"><div class="bar ghost">의존 대기</div></div>
+      <div class="p"><div class="bar build rl rr">구축</div></div>
+    </div>
+    <div class="row child">
+      <div class="lab child"><div class="nm">가중치·피드백 루프</div><div class="sub">신선도·신뢰도 가중치 · 수락/거절/수정 학습</div></div>
+      <div class="p"></div>
+      <div class="p"></div>
+      <div class="p"></div>
+      <div class="p"><div class="bar build rl rr">구축</div></div>
+    </div>
+  </div>
+
+  <!-- ===== BSP Weekly 2.0 ===== -->
+  <div class="grp">
+    <div class="row">
+      <div class="lab"><div class="nm">BSP Weekly 2.0</div><div class="sub">decision · exception 중심 회의로 전환</div></div>
+      <div class="p"></div>
+      <div class="p"><div class="bar build rl">v0 운영안</div></div>
+      <div class="p"><div class="bar live">운영</div></div>
+      <div class="p"><div class="bar live rr"></div></div>
+    </div>
+    <div class="row child">
+      <div class="lab child"><div class="nm">정체 딜 슬랙봇</div><div class="sub">21일 무접촉 감지 → 오너 진행/보류 갱신</div></div>
+      <div class="p"><div class="bar pilot rl">PoC</div></div>
+      <div class="p"><div class="bar build">구축</div></div>
+      <div class="p"><div class="bar live">가동</div></div>
+      <div class="p"><div class="bar live rr"></div></div>
+    </div>
+    <div class="row child">
+      <div class="lab child"><div class="nm">CBO 주간 브리핑</div><div class="sub">자동화 1호 · 신규/정체/예외 자동 상신</div></div>
+      <div class="p"><div class="bar build rl">즉시 착수</div></div>
+      <div class="p"><div class="bar live">가동</div></div>
+      <div class="p"><div class="bar live"></div></div>
+      <div class="p"><div class="bar live rr"></div></div>
+    </div>
+  </div>
+
+  <!-- ===== HIC ===== -->
+  <div class="grp">
+    <div class="row">
+      <div class="lab"><div class="nm">HIC (Human Intelligence)</div><div class="sub">현장 신호 구조화 · Raw~Confidence 5요소</div></div>
+      <div class="p"></div>
+      <div class="p"><div class="bar pilot rl">수동 템플릿</div></div>
+      <div class="p"><div class="bar build">반자동</div></div>
+      <div class="p"><div class="bar build rr">고도화</div></div>
+    </div>
+    <div class="row child">
+      <div class="lab child"><div class="nm">회의록 전사 표준화</div><div class="sub">글로벌 전사 단일 툴(Tiro) · 자동 구조화</div></div>
+      <div class="p"></div>
+      <div class="p"><div class="bar pilot rl">비즈팀 파일럿</div></div>
+      <div class="p"><div class="bar build">확장</div></div>
+      <div class="p"><div class="bar live rr">정착</div></div>
+    </div>
+    <div class="row child">
+      <div class="lab child"><div class="nm">미팅전 확인질문 3개 알림봇</div><div class="sub">캘린더 연동 → 확인 질문 3개 push</div></div>
+      <div class="p"></div>
+      <div class="p"><div class="bar pilot rl">설계</div></div>
+      <div class="p"><div class="bar build">구축</div></div>
+      <div class="p"><div class="bar live rr">가동</div></div>
+    </div>
+    <div class="row child">
+      <div class="lab child"><div class="nm">온톨로지 편입</div><div class="sub">태깅 신호 → MeetingNote/ActionItem 자동 편입</div></div>
+      <div class="p"></div>
+      <div class="p"></div>
+      <div class="p"><div class="bar build rl">반자동 편입</div></div>
+      <div class="p"><div class="bar build rr">고도화</div></div>
+    </div>
+  </div>
+
+  <!-- ===== Account Dashboard ===== -->
+  <div class="grp">
+    <div class="row">
+      <div class="lab"><div class="nm">Account Dashboard</div><div class="sub">어카운트별 Overview · 딜 진척 · Physical AI 이해도</div></div>
+      <div class="p"><div class="bar ghost">오너 백필 의존</div></div>
+      <div class="p"><div class="bar build rl">v0</div></div>
+      <div class="p"><div class="bar build">고도화</div></div>
+      <div class="p"><div class="bar live rr">운영</div></div>
+    </div>
+  </div>
+
+  <!-- ===== 국책 자동화 ===== -->
+  <div class="grp">
+    <div class="row">
+      <div class="lab"><div class="nm">국책 자동화</div><div class="sub">포트폴리오 · 수요기업↔Account 그래프 매칭</div></div>
+      <div class="p"></div>
+      <div class="p"></div>
+      <div class="p"><div class="bar build rl">구축</div></div>
+      <div class="p"><div class="bar build rr">확장</div></div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<p class="note"><b>읽는 법.</b> 위에서 아래로 <b>기반(온톨로지) → 운영(Weekly) → 수집(HIC) → 활용(Dashboard·국책)</b> 순. 아래 데이터 레이어의 품질이 위 산출물의 상한을 정합니다. 점선 막대는 선행 과제가 끝나야 착수 가능한 의존 항목입니다.</p>
+<footer>
+  <span>RLWRLD · BSP Operating System</span>
+  <span>담당: 남호 · namho.kim@rlwrld.ai</span>
+</footer>
+</body>
+</html>

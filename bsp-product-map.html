@@ -30,10 +30,11 @@
     -webkit-font-smoothing:antialiased;
     padding:clamp(20px,4vw,44px) clamp(14px,3vw,32px);
   }
-  header{max-width:1040px; margin:0 auto 22px}
+  header{max-width:1180px; margin:0 auto 22px}
   .eyebrow{font-size:11.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--accent); font-weight:700; margin:0 0 8px}
   h1{font-size:clamp(21px,3.4vw,30px); line-height:1.15; margin:0 0 8px; text-wrap:balance}
-  .lede{color:var(--ink-soft); font-size:14.5px; margin:0; max-width:760px}
+  .lede{color:var(--ink-soft); font-size:14.5px; margin:0; max-width:820px}
+  .lede b{color:var(--ink)}
 
   .legend{display:flex; flex-wrap:wrap; gap:16px 22px; margin:18px 0 0; align-items:center}
   .lg{display:flex; align-items:center; gap:8px; font-size:12.5px; color:var(--ink-soft)}
@@ -41,22 +42,30 @@
   .sw.live{background:var(--live)} .sw.build{background:var(--build)} .sw.pilot{background:var(--pilot)}
   .sw.wait{background:transparent; border:1.6px dashed var(--wait-line)}
 
-  .scroll{max-width:1040px; margin:0 auto; overflow-x:auto; padding-bottom:6px}
-  .chart{min-width:760px; background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:6px 0 10px}
+  .stage{max-width:1180px; margin:0 auto; display:flex; align-items:flex-start; gap:14px}
+  .scroll{flex:1 1 auto; min-width:0; overflow-x:auto; padding-bottom:6px}
+  .chart{min-width:640px; background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:6px 0 10px}
 
   .row{display:grid; grid-template-columns:var(--label-w) repeat(4,1fr); align-items:center; height:var(--row-h)}
   .row.child{height:var(--child-h)}
   .row.head{height:42px}
+  .row[data-k]{cursor:pointer; transition:background .12s}
+  .row[data-k]:hover{background:var(--surface-2)}
+  .row.active{background:color-mix(in srgb,var(--accent) 14%, transparent)}
   .row + .row .p{border-top:1px solid var(--grid)}
   .grp{border-top:1px solid var(--line)}
   .grp:first-child{border-top:none}
 
-  .lab{padding:0 14px 0 16px; overflow:hidden}
+  .lab{padding:0 14px 0 16px; overflow:hidden; display:flex; align-items:center; gap:6px}
   .lab.child{padding-left:30px}
+  .lab .txt{overflow:hidden}
   .lab .nm{font-weight:650; font-size:13.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
   .row.child .lab .nm{font-weight:500; font-size:12.8px}
   .row.child .lab .nm::before{content:"└ "; color:var(--ink-faint); font-weight:400}
   .lab .sub{font-size:10.7px; color:var(--ink-faint); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:1px}
+  .lab .ic{flex:none; color:var(--ink-faint); font-size:10px; opacity:0; transition:opacity .12s}
+  .row[data-k]:hover .lab .ic, .row.active .lab .ic{opacity:1}
+  .row.active .lab .ic{color:var(--accent)}
 
   .head .lab{font-size:11.5px; color:var(--ink-faint); font-weight:700; letter-spacing:.02em; text-transform:uppercase}
   .head .h{padding:0 6px; text-align:center; font-size:12.5px; font-weight:650; color:var(--ink); box-shadow:inset 1px 0 0 var(--grid)}
@@ -72,16 +81,41 @@
              border-radius:7px; height:22px; margin:0 4px; width:calc(100% - 8px)}
   .row.child .bar.ghost{height:19px}
 
-  footer{max-width:1040px; margin:16px auto 0; color:var(--ink-faint); font-size:11.8px; display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap}
-  .note{max-width:1040px; margin:14px auto 0; font-size:12px; color:var(--ink-soft)}
+  /* detail panel */
+  .panel{flex:0 0 300px; position:sticky; top:14px; align-self:flex-start;
+         background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:18px 18px 20px}
+  .stage:not(.open) .panel{display:none}
+  .panel .close{position:absolute; top:12px; right:12px; width:26px; height:26px; border:none; border-radius:7px;
+                background:var(--surface-2); color:var(--ink-soft); font-size:16px; line-height:1; cursor:pointer}
+  .panel .close:hover{background:var(--line); color:var(--ink)}
+  .panel .ptag{font-size:10.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--accent); font-weight:700; margin:0 0 4px}
+  .panel .ptitle{font-size:17px; font-weight:700; margin:0 34px 14px 0; line-height:1.25}
+  .psec{margin-top:14px}
+  .psec h4{margin:0 0 6px; font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-faint); font-weight:700}
+  .ppurpose{margin:0; font-size:13px; color:var(--ink); line-height:1.5}
+  .pfeatures{margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:6px}
+  .pfeatures li{font-size:12.5px; color:var(--ink-soft); line-height:1.4; padding-left:14px; position:relative}
+  .pfeatures li::before{content:"·"; position:absolute; left:3px; color:var(--accent); font-weight:800}
+  .psub{margin:0; padding:0; list-style:none; display:flex; flex-wrap:wrap; gap:6px}
+  .subchip{border:1px solid var(--line); background:var(--surface-2); color:var(--ink); border-radius:7px;
+           padding:5px 10px; font-size:12px; font-weight:600; cursor:pointer; font-family:inherit; transition:border-color .12s}
+  .subchip:hover{border-color:var(--accent); color:var(--accent)}
+
+  .note{max-width:1180px; margin:14px auto 0; font-size:12px; color:var(--ink-soft)}
   .note b{color:var(--ink)}
+  footer{max-width:1180px; margin:12px auto 0; color:var(--ink-faint); font-size:11.8px; display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap}
+
+  @media(max-width:720px){
+    .stage{flex-direction:column}
+    .panel{flex:1 1 auto; width:100%; position:static}
+  }
 </style>
 </head>
 <body>
 <header>
   <p class="eyebrow">BSP Workshop · 26 H2 · S7</p>
   <h1>BSP Product Map</h1>
-  <p class="lede">AI-native BSP Operating System을 구성하는 프로덕트를 세부 기능 단위로 분해하고, 가동 시점(Now → Q4)에 따라 배치했습니다. 막대 색은 상태, <b>점선 테두리는 선행 의존(아직 착수 전)</b>을 뜻합니다.</p>
+  <p class="lede">AI-native BSP Operating System을 구성하는 프로덕트를 세부 기능 단위로 분해하고, 가동 시점(Now → Q4)에 따라 배치했습니다. 막대 색은 상태, <b>점선 테두리는 선행 의존(아직 착수 전)</b>. <b>각 행을 클릭하면 오른쪽에 목적·기능·세부기능이 열립니다(다시 클릭하면 닫힘).</b></p>
   <div class="legend">
     <span class="lg"><span class="sw live"></span>가동 · 상시 유지</span>
     <span class="lg"><span class="sw build"></span>구축</span>
@@ -90,10 +124,10 @@
   </div>
 </header>
 
+<div class="stage" id="stage">
 <div class="scroll">
 <div class="chart">
 
-  <!-- time axis -->
   <div class="row head">
     <div class="lab">프로덕트 / 세부 기능</div>
     <div class="h">Now<small>7월</small></div>
@@ -104,29 +138,29 @@
 
   <!-- ===== 온톨로지 ===== -->
   <div class="grp">
-    <div class="row">
-      <div class="lab"><div class="nm">온톨로지 (Core)</div><div class="sub">디지털 트윈 · 스키마 46/46 · 1,188 인스턴스</div></div>
+    <div class="row" data-k="ontology-core">
+      <div class="lab"><div class="txt"><div class="nm">온톨로지 (Core)</div><div class="sub">디지털 트윈 · 스키마 46/46 · 1,188 인스턴스</div></div><span class="ic">▸</span></div>
       <div class="p"><div class="bar live rl">가동 · 상시 유지</div></div>
       <div class="p"><div class="bar live"></div></div>
       <div class="p"><div class="bar live"></div></div>
       <div class="p"><div class="bar live rr"></div></div>
     </div>
-    <div class="row child">
-      <div class="lab child"><div class="nm">데이터 무결성·표준화</div><div class="sub">중복 스캔 · 엔티티 표준명 · Decision Log 실가동</div></div>
+    <div class="row child" data-k="data-integrity">
+      <div class="lab child"><div class="txt"><div class="nm">데이터 무결성·표준화</div><div class="sub">중복 스캔 · 엔티티 표준명 · Decision Log 실가동</div></div><span class="ic">▸</span></div>
       <div class="p"></div>
       <div class="p"><div class="bar pilot rl">착수</div></div>
       <div class="p"><div class="bar build">구축</div></div>
       <div class="p"><div class="bar live rr">정례화</div></div>
     </div>
-    <div class="row child">
-      <div class="lab child"><div class="nm">권한별 온톨로지</div><div class="sub">권한별 인풋 차등 · C-level 회의록 확보</div></div>
+    <div class="row child" data-k="access-ontology">
+      <div class="lab child"><div class="txt"><div class="nm">권한별 온톨로지</div><div class="sub">권한별 인풋 차등 · C-level 회의록 확보</div></div><span class="ic">▸</span></div>
       <div class="p"></div>
       <div class="p"></div>
       <div class="p"><div class="bar ghost">의존 대기</div></div>
       <div class="p"><div class="bar build rl rr">구축</div></div>
     </div>
-    <div class="row child">
-      <div class="lab child"><div class="nm">가중치·피드백 루프</div><div class="sub">신선도·신뢰도 가중치 · 수락/거절/수정 학습</div></div>
+    <div class="row child" data-k="weight-feedback">
+      <div class="lab child"><div class="txt"><div class="nm">가중치·피드백 루프</div><div class="sub">신선도·신뢰도 가중치 · 수락/거절/수정 학습</div></div><span class="ic">▸</span></div>
       <div class="p"></div>
       <div class="p"></div>
       <div class="p"><div class="bar build rl">구축</div></div>
@@ -136,22 +170,22 @@
 
   <!-- ===== BSP Weekly 2.0 ===== -->
   <div class="grp">
-    <div class="row">
-      <div class="lab"><div class="nm">BSP Weekly 2.0</div><div class="sub">decision · exception 중심 회의로 전환</div></div>
+    <div class="row" data-k="weekly">
+      <div class="lab"><div class="txt"><div class="nm">BSP Weekly 2.0</div><div class="sub">decision · exception 중심 회의로 전환</div></div><span class="ic">▸</span></div>
       <div class="p"></div>
       <div class="p"><div class="bar build rl">v0 운영안</div></div>
       <div class="p"><div class="bar live">운영</div></div>
       <div class="p"><div class="bar live rr"></div></div>
     </div>
-    <div class="row child">
-      <div class="lab child"><div class="nm">정체 딜 슬랙봇</div><div class="sub">21일 무접촉 감지 → 오너 진행/보류 갱신</div></div>
+    <div class="row child" data-k="deal-bot">
+      <div class="lab child"><div class="txt"><div class="nm">정체 딜 슬랙봇</div><div class="sub">21일 무접촉 감지 → 오너 진행/보류 갱신</div></div><span class="ic">▸</span></div>
       <div class="p"><div class="bar pilot rl">PoC</div></div>
       <div class="p"><div class="bar build">구축</div></div>
       <div class="p"><div class="bar live">가동</div></div>
       <div class="p"><div class="bar live rr"></div></div>
     </div>
-    <div class="row child">
-      <div class="lab child"><div class="nm">CBO 주간 브리핑</div><div class="sub">자동화 1호 · 신규/정체/예외 자동 상신</div></div>
+    <div class="row child" data-k="cbo-brief">
+      <div class="lab child"><div class="txt"><div class="nm">CBO 주간 브리핑</div><div class="sub">자동화 1호 · 신규/정체/예외 자동 상신</div></div><span class="ic">▸</span></div>
       <div class="p"><div class="bar build rl">즉시 착수</div></div>
       <div class="p"><div class="bar live">가동</div></div>
       <div class="p"><div class="bar live"></div></div>
@@ -161,29 +195,29 @@
 
   <!-- ===== HIC ===== -->
   <div class="grp">
-    <div class="row">
-      <div class="lab"><div class="nm">HIC (Human Intelligence)</div><div class="sub">현장 신호 구조화 · Raw~Confidence 5요소</div></div>
+    <div class="row" data-k="hic">
+      <div class="lab"><div class="txt"><div class="nm">HIC (Human Intelligence)</div><div class="sub">현장 신호 구조화 · Raw~Confidence 5요소</div></div><span class="ic">▸</span></div>
       <div class="p"></div>
       <div class="p"><div class="bar pilot rl">수동 템플릿</div></div>
       <div class="p"><div class="bar build">반자동</div></div>
       <div class="p"><div class="bar build rr">고도화</div></div>
     </div>
-    <div class="row child">
-      <div class="lab child"><div class="nm">회의록 전사 표준화</div><div class="sub">글로벌 전사 단일 툴(Tiro) · 자동 구조화</div></div>
+    <div class="row child" data-k="transcription">
+      <div class="lab child"><div class="txt"><div class="nm">회의록 전사 표준화</div><div class="sub">글로벌 전사 단일 툴(Tiro) · 자동 구조화</div></div><span class="ic">▸</span></div>
       <div class="p"></div>
       <div class="p"><div class="bar pilot rl">비즈팀 파일럿</div></div>
       <div class="p"><div class="bar build">확장</div></div>
       <div class="p"><div class="bar live rr">정착</div></div>
     </div>
-    <div class="row child">
-      <div class="lab child"><div class="nm">미팅전 확인질문 3개 알림봇</div><div class="sub">캘린더 연동 → 확인 질문 3개 push</div></div>
+    <div class="row child" data-k="prequestion-bot">
+      <div class="lab child"><div class="txt"><div class="nm">미팅전 확인질문 3개 알림봇</div><div class="sub">캘린더 연동 → 확인 질문 3개 push</div></div><span class="ic">▸</span></div>
       <div class="p"></div>
       <div class="p"><div class="bar pilot rl">설계</div></div>
       <div class="p"><div class="bar build">구축</div></div>
       <div class="p"><div class="bar live rr">가동</div></div>
     </div>
-    <div class="row child">
-      <div class="lab child"><div class="nm">온톨로지 편입</div><div class="sub">태깅 신호 → MeetingNote/ActionItem 자동 편입</div></div>
+    <div class="row child" data-k="ontology-ingest">
+      <div class="lab child"><div class="txt"><div class="nm">온톨로지 편입</div><div class="sub">태깅 신호 → MeetingNote/ActionItem 자동 편입</div></div><span class="ic">▸</span></div>
       <div class="p"></div>
       <div class="p"></div>
       <div class="p"><div class="bar build rl">반자동 편입</div></div>
@@ -193,8 +227,8 @@
 
   <!-- ===== Account Dashboard ===== -->
   <div class="grp">
-    <div class="row">
-      <div class="lab"><div class="nm">Account Dashboard</div><div class="sub">어카운트별 Overview · 딜 진척 · Physical AI 이해도</div></div>
+    <div class="row" data-k="account-dashboard">
+      <div class="lab"><div class="txt"><div class="nm">Account Dashboard</div><div class="sub">어카운트별 Overview · 딜 진척 · 이해도</div></div><span class="ic">▸</span></div>
       <div class="p"><div class="bar ghost">오너 백필 의존</div></div>
       <div class="p"><div class="bar build rl">v0</div></div>
       <div class="p"><div class="bar build">고도화</div></div>
@@ -204,8 +238,8 @@
 
   <!-- ===== 국책 자동화 ===== -->
   <div class="grp">
-    <div class="row">
-      <div class="lab"><div class="nm">국책 자동화</div><div class="sub">포트폴리오 · 수요기업↔Account 그래프 매칭</div></div>
+    <div class="row" data-k="national">
+      <div class="lab"><div class="txt"><div class="nm">국책 자동화</div><div class="sub">포트폴리오 · 수요기업↔Account 그래프 매칭</div></div><span class="ic">▸</span></div>
       <div class="p"></div>
       <div class="p"></div>
       <div class="p"><div class="bar build rl">구축</div></div>
@@ -213,13 +247,95 @@
     </div>
   </div>
 
+  <!-- ===== 경쟁사 벤치마크 ===== -->
+  <div class="grp">
+    <div class="row" data-k="competitor">
+      <div class="lab"><div class="txt"><div class="nm">경쟁사 벤치마크</div><div class="sub">주간 리포트(가동중) → 온톨로지 연동</div></div><span class="ic">▸</span></div>
+      <div class="p"><div class="bar live rl">가동중</div></div>
+      <div class="p"><div class="bar build">온톨로지 연동</div></div>
+      <div class="p"><div class="bar build">밀도 고도화</div></div>
+      <div class="p"><div class="bar live rr"></div></div>
+    </div>
+    <div class="row child" data-k="market-recon">
+      <div class="lab child"><div class="txt"><div class="nm">Market Recon 도입</div><div class="sub">경쟁 news/claim 자동 수집·요약</div></div><span class="ic">▸</span></div>
+      <div class="p"></div>
+      <div class="p"></div>
+      <div class="p"><div class="bar pilot rl">도입</div></div>
+      <div class="p"><div class="bar live rr">정착</div></div>
+    </div>
+    <div class="row child" data-k="paper-chat">
+      <div class="lab child"><div class="txt"><div class="nm">Paper Chat 도입</div><div class="sub">논문 기반 경쟁 기술 심층 분석</div></div><span class="ic">▸</span></div>
+      <div class="p"></div>
+      <div class="p"></div>
+      <div class="p"><div class="bar pilot rl">도입</div></div>
+      <div class="p"><div class="bar live rr">정착</div></div>
+    </div>
+  </div>
+
 </div>
 </div>
 
-<p class="note"><b>읽는 법.</b> 위에서 아래로 <b>기반(온톨로지) → 운영(Weekly) → 수집(HIC) → 활용(Dashboard·국책)</b> 순. 아래 데이터 레이어의 품질이 위 산출물의 상한을 정합니다. 점선 막대는 선행 과제가 끝나야 착수 가능한 의존 항목입니다.</p>
+<aside class="panel" id="panel">
+  <button class="close" aria-label="닫기">×</button>
+  <p class="ptag">Product</p>
+  <div class="ptitle"></div>
+  <div class="psec"><h4>목적</h4><p class="ppurpose"></p></div>
+  <div class="psec"><h4>핵심 기능</h4><ul class="pfeatures"></ul></div>
+  <div class="psec sub"><h4>세부 기능</h4><ul class="psub"></ul></div>
+</aside>
+</div>
+
+<p class="note"><b>읽는 법.</b> 위에서 아래로 <b>기반(온톨로지) → 운영(Weekly) → 수집(HIC) → 활용(Dashboard·국책·경쟁사)</b>. 아래 데이터 레이어의 품질이 위 산출물의 상한을 정합니다. 점선 막대는 선행 과제가 끝나야 착수 가능한 의존 항목입니다.</p>
 <footer>
   <span>RLWRLD · BSP Operating System</span>
   <span>담당: 남호 · namho.kim@rlwrld.ai</span>
 </footer>
+
+<script>
+const DATA = {
+  "ontology-core":{t:"온톨로지 (Core)",p:"회사가 돌아가는 방식을 그대로 옮긴 비즈니스 디지털 트윈. 의사결정 인사이트의 상한을 규정하는 기반 레이어.",f:["스키마 46/46 역량질문 표현 검증","8개 도메인 클래스·속성·관계","1,188 인스턴스(검증 에러 0)","자연어 역량질문 응답"],sub:["data-integrity","access-ontology","weight-feedback"]},
+  "data-integrity":{t:"데이터 무결성·표준화",p:"‘정제된 데이터’ 축 확보 — 낡음·불일치·무산 결정을 제거해 GIGO를 방지한다.",f:["중복 ID 스캔 정례화","엔티티 표준명/별칭 규율(신진우·Kyocera 등 자동 연결 회복)","outdated(무산 계약 end date 등) 클렌징","Decision Log 실가동(현재 0행 → 회의 후 1건씩 기록)"]},
+  "access-ontology":{t:"권한별 온톨로지",p:"전사 확대·C-level 의사결정 지원의 blocker(수직 공백) 해소.",f:["권한 수준별 인풋 온톨로지 차등","C-level·이사회 회의록 수직 공백 확보","민감도별 접근 거버넌스"]},
+  "weight-feedback":{t:"가중치·피드백 루프",p:"브리핑봇을 학습형 의사결정 파트너로 전환. (Q3 구축 → Q4 운영·고도화)",f:["신선도·발화자·신뢰도 기준 가중치 규칙","수락/거절/수정 학습 루프","Management by Exception 위에 얹히는 학습층"]},
+  "weekly":{t:"BSP Weekly 2.0",p:"update 회의 → decision/exception 회의로 전환. 30분 안에 C레벨 결정이 필요한 안건만 논의.",f:["D-1 미결 스레드+예외 수집 슬랙봇","미팅=결정만(implication→decision→owner→due)","직후 Decision DB 자동 기록"],sub:["deal-bot","cbo-brief"]},
+  "deal-bot":{t:"정체 딜 슬랙봇",p:"staleness 자동 복구 — 방치된 딜 상태를 오너가 직접 갱신하게 만든다.",f:["21일 무접촉 딜 감지","오너 DM(진행/보류/드랍) 요청","statusHistory·Last Contact 필드 반영","Weekly 예외 신호로 승격"]},
+  "cbo-brief":{t:"CBO 주간 브리핑",p:"자동화 1호. 매주 CBO에게 신호를 자동 상신(딜 46건 실측 → 즉시 가능).",f:["신규/이동/정체 딜 자동 감지","pricing exception · red flag","competitor movement","→ CBO Brief 초안 생성"]},
+  "hic":{t:"HIC (Human Intelligence)",p:"크롤링이 못 얻는 현장 신호를 Raw~Confidence 5요소로 구조화해 재사용한다.",f:["현장 6종 신호(Customer·Market·Competitor·Partner·Gov·Internal)","7대 접점별 핵심 질문 표준화","수집 → 검증 → 온톨로지 편입 루프"],sub:["transcription","prequestion-bot","ontology-ingest"]},
+  "transcription":{t:"회의록 전사 표준화",p:"트윈 입력 병목 해소 — 원문 전사 부재(전사율 vlab 18%·RX 6%)를 해결.",f:["API연동 글로벌 전사 단일 툴(Tiro 등)","회의 종료 시 자동 전사·구조화","→ MeetingNote/Decision/ActionItem 자동 생성","비즈팀 파일럿 → 확장"]},
+  "prequestion-bot":{t:"미팅전 확인질문 3개 알림봇",p:"미팅 전, 이번 접점에서 확인할 질문을 자동으로 제시한다.",f:["캘린더 연동 → 고객사/파트너 미팅 감지","이번 접점 확인 질문 3개 push","미팅 후 답변 여부 검증"]},
+  "ontology-ingest":{t:"온톨로지 편입",p:"태깅된 현장 신호를 트윈에 자동 반영한다.",f:["raw signal 6종 자동 분류·태깅","→ MeetingNote/ActionItem/AlignmentTopic 인스턴스","기존 노드에 자동 링크"]},
+  "account-dashboard":{t:"Account Dashboard",p:"탭핑 중인 어카운트를 회사별로 한 화면에 정리(HIC 응용).",f:["Overview · 내부 사정 · 딜 진척도 · Physical AI 이해도","Deal×Product 매핑","stage / blocker / next decision","고객유형(매출·데이터·레퍼런스·파트너) 축"]},
+  "national":{t:"국책 자동화",p:"국책과제를 기술·데이터·레퍼런스·컨소시엄 선점 도구로 운영한다.",f:["17건 과제 포트폴리오","RFP influence point 추적","수요기업↔Account 그래프 매칭(RAG 불가·그래프 전용)","Tech gap × Project 연결"]},
+  "competitor":{t:"경쟁사 벤치마크",p:"경쟁 기술·BM·pricing·claim 변화를 지속 추적한다. 이미 가동 중인 파이프라인을 온톨로지와 연동.",f:["주간 경쟁 리포트(W14~W28, 가동중)","온톨로지 Competitor(33개사) 연동","기술 밀도 고도화(Market Recon·Paper Chat)"],sub:["market-recon","paper-chat"]},
+  "market-recon":{t:"Market Recon 도입",p:"시장·경쟁 정보 자동 수집을 강화한다.",f:["경쟁사 news/claim 자동 크롤·요약","온톨로지 NewsItem 편입","시장 언어·buyer 반응 추적"]},
+  "paper-chat":{t:"Paper Chat 도입",p:"기술 논문 기반으로 경쟁 기술을 심층 분석한다.",f:["arXiv 등 논문 Q&A","경쟁 기술 클레임 검증","차별화 근거 확보"]}
+};
+const stage=document.getElementById('stage');
+const panel=document.getElementById('panel');
+let current=null;
+function render(k){
+  const d=DATA[k]; if(!d) return;
+  panel.querySelector('.ptitle').textContent=d.t;
+  panel.querySelector('.ppurpose').textContent=d.p;
+  const ul=panel.querySelector('.pfeatures'); ul.innerHTML='';
+  d.f.forEach(x=>{const li=document.createElement('li');li.textContent=x;ul.appendChild(li);});
+  const subSec=panel.querySelector('.psec.sub');
+  const su=panel.querySelector('.psub'); su.innerHTML='';
+  if(d.sub&&d.sub.length){
+    subSec.style.display='';
+    d.sub.forEach(sk=>{const b=document.createElement('button');b.className='subchip';b.type='button';b.textContent=DATA[sk].t;b.addEventListener('click',e=>{e.stopPropagation();select(sk);});su.appendChild(b);});
+  } else { subSec.style.display='none'; }
+}
+function select(k){
+  if(current===k){close();return;}
+  current=k;
+  document.querySelectorAll('.row').forEach(r=>r.classList.toggle('active',r.dataset.k===k));
+  render(k);
+  stage.classList.add('open');
+}
+function close(){current=null;stage.classList.remove('open');document.querySelectorAll('.row').forEach(r=>r.classList.remove('active'));}
+document.querySelectorAll('.row[data-k]').forEach(r=>r.addEventListener('click',()=>select(r.dataset.k)));
+panel.querySelector('.close').addEventListener('click',e=>{e.stopPropagation();close();});
+</script>
 </body>
 </html>

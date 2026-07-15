@@ -136,8 +136,8 @@
     <div class="status">
       <span class="chip"><b>9</b> 도메인 · <b>40</b> 클래스</span>
       <span class="chip">딜 <b>46</b> · 경쟁사 <b>33</b> · 국책 <b>17</b> · 가상랩 <b>6</b></span>
-      <span class="chip">회의록 <b>77</b> · Person <b>113</b> · 뉴스 <b>51</b></span>
-      <span class="chip">의사결정 <b>212</b> · 실행항목 <b>404</b></span>
+      <span class="chip">회의록 <b>196</b> · Person <b>113</b> · 뉴스 <b>51</b></span>
+      <span class="chip">의사결정 <b>507</b> · 실행항목 <b>1074</b></span>
       <span class="chip">스키마 <b>v0.3</b> · 총 <b>1,188</b> 노드</span>
     </div>
   </header>
@@ -156,10 +156,10 @@
     </div>
     <p class="note" style="margin-top:16px">함께 만든 것: <a href="https://claude.ai/code/artifact/093305eb-d524-455e-8994-f588abfcd400" target="_blank" rel="noopener">Data·Logic·Action 구조 설명 페이지</a>, <a href="https://claude.ai/code/artifact/e7b69b5c-b197-4626-a728-4904cf6461ab" target="_blank" rel="noopener">인터랙티브 지식 그래프</a>(스키마·인스턴스 두 뷰 + 타입 토글), 그리고 이 개요 페이지.</p>
     <div class="callout" style="border-left-color:var(--d-tech)">
-      <b style="color:var(--d-tech)">2026-07-10 갱신.</b> 데이터 무결성 정리(중복키·깨진 참조·경쟁사 이중계수 62→33 수정), 우리 모델 4건 populate(G0·RLDX·RFM Backbone·World Model), 내부 모델·연구 회의록 32건 인스턴스화(총 77건), Person 113명. 역량질문 46개 답변 상태: ✅ 18 · 🟡 16 · 🔴 12.
+      <b style="color:var(--d-tech)">2026-07-10 갱신.</b> 데이터 무결성 정리(중복키·깨진 참조·경쟁사 이중계수 62→33 수정), 우리 모델 4건 populate(G0·RLDX·RFM Backbone·World Model), 내부 모델·연구 회의록 32건 인스턴스화(총 77건), Person 113명. Google Drive Gemini 회의록 119건 전문 인스턴스화(→회의록 196) + 의사결정 295·실행항목 670 추출·적대검증(→의사결정 507·실행 1074). 역량질문 46개 답변 상태: ✅ 18 · 🟡 16 · 🔴 12.
     </div>
     <div class="callout" style="border-left-color:var(--d-strategy)">
-      <b style="color:var(--d-strategy)">2026-07-12 갱신 — 의사결정층 신설.</b> 전략·실행 도메인에 <span class="tok">Decision</span> 클래스를 추가(스키마 v0.3)하고, 흩어진 회의록·슬랙에서 <b>의사결정 212건</b>을 추출·적대검증해 인스턴스화. 각 결정의 하류 <span class="tok">ActionItem</span>은 <b>404건</b>으로 확장(<span class="tok">derivedFrom</span>으로 근거 연결). 함께 비어 있던 <span class="tok">Investor</span> 13 · <span class="tok">UseCase</span> 11 · <span class="tok">Industry</span> 6 · <span class="tok">Publication</span> 3 · <span class="tok">PREvent</span> 2 · <span class="tok">OperationIssue</span> 2 를 채워 <b>총 1,188 인스턴스</b>. Model 계열은 배포 실모델(<span class="tok">Model</span>)·릴리스(<span class="tok">ModelRelease</span>)·연구트랙(<span class="tok">ResearchTrack</span>)으로 세분화. 남은 공백은 RecruitingPosition(HR 권한)·AlignmentTopic(로직 파이프라인).
+      <b style="color:var(--d-strategy)">2026-07-12 갱신 — 의사결정층 신설.</b> 전략·실행 도메인에 <span class="tok">Decision</span> 클래스를 추가(스키마 v0.3)하고, 흩어진 회의록·슬랙·Google Drive 회의록에서 <b>의사결정 507건</b>을 추출·적대검증해 인스턴스화. 각 결정의 하류 <span class="tok">ActionItem</span>은 <b>1074건</b>으로 확장(<span class="tok">derivedFrom</span>으로 근거 연결). 함께 비어 있던 <span class="tok">Investor</span> 13 · <span class="tok">UseCase</span> 11 · <span class="tok">Industry</span> 6 · <span class="tok">Publication</span> 3 · <span class="tok">PREvent</span> 2 · <span class="tok">OperationIssue</span> 2 를 채워 <b>총 1,188 인스턴스</b>. Model 계열은 배포 실모델(<span class="tok">Model</span>)·릴리스(<span class="tok">ModelRelease</span>)·연구트랙(<span class="tok">ResearchTrack</span>)으로 세분화. 남은 공백은 RecruitingPosition(HR 권한)·AlignmentTopic(로직 파이프라인).
     </div>
   </section>
 
@@ -276,7 +276,7 @@
         <div class="cl"><span class="cn" style="color:var(--d-sources)">DataSource</span><span class="cd">모든 원천의 추상 클래스. 모든 개체의 <span class="k">sourcedFrom</span>이 가리키는 대상</span></div>
         <div class="cl"><span class="cn" style="color:var(--d-sources)">SlackChannel</span><span class="cd">슬랙 채널(62개, 13유형). <span class="k">activityLevel</span>로 활성도</span></div>
         <div class="cl"><span class="cn" style="color:var(--d-sources)">NotionPage</span><span class="cd">노션 페이지·DB(Root·대시보드·DB 포함)</span></div>
-        <div class="cl"><span class="cn" style="color:var(--d-sources)">MeetingNote</span><span class="cd">회의록(노션·구글, Meet/Zoom 스크립트). 큐레이션 <b>77건</b> · <span class="k">hasTranscript</span></span></div>
+        <div class="cl"><span class="cn" style="color:var(--d-sources)">MeetingNote</span><span class="cd">회의록(노션·구글, Meet/Zoom 스크립트). 큐레이션 <b>196건</b> · <span class="k">hasTranscript</span></span></div>
         <div class="cl"><span class="cn" style="color:var(--d-sources)">CalendarEvent</span><span class="cd">캘린더 일정. <span class="k">agendaClear·hasMeetingNote</span></span></div>
         <div class="cl"><span class="cn" style="color:var(--d-sources)">ExternalSource</span><span class="cd">외부 원천(경쟁사 웹사이트·뉴스·arXiv·GitHub)</span></div>
       </div>
@@ -285,8 +285,8 @@
     <details class="dom">
       <summary><span class="bar" style="background:var(--d-strategy)"></span><span class="dh">⑨ 전략·실행 (strategy)</span><span class="dc">3</span><span class="caret">›</span></summary>
       <div class="clist">
-        <div class="cl"><span class="cn" style="color:var(--d-strategy)">Decision</span><span class="cd">회의·슬랙에서 내려진 의사결정 <b>212건</b>(1급 노드). <span class="k">decisionType(Accept/Reject/Defer/Explore)·summary·rationale·roadmapImpact·status</span> · <span class="k">resultsIn → ActionItem</span></span></div>
-        <div class="cl"><span class="cn" style="color:var(--d-strategy)">ActionItem</span><span class="cd">도출된 실행 항목 <b>404건</b>(CBO 개인 우선순위 포함). <span class="k">derivedFrom → Decision</span>으로 근거 연결</span></div>
+        <div class="cl"><span class="cn" style="color:var(--d-strategy)">Decision</span><span class="cd">회의·슬랙에서 내려진 의사결정 <b>507건</b>(노션·슬랙 212 + Google Drive 회의록 295, 1급 노드). <span class="k">decisionType(Accept/Reject/Defer/Explore)·summary·rationale·roadmapImpact·status</span> · <span class="k">resultsIn → ActionItem</span></span></div>
+        <div class="cl"><span class="cn" style="color:var(--d-strategy)">ActionItem</span><span class="cd">도출된 실행 항목 <b>1074건</b>(CBO 개인 우선순위 포함). <span class="k">derivedFrom → Decision</span>으로 근거 연결</span></div>
         <div class="cl"><span class="cn" style="color:var(--d-strategy)">AlignmentTopic</span><span class="cd">부서간·전사·가상랩↔제품팀 사이 맞춰야 할 영역. <span class="k">betweenUnits·evidence·resolvedBy</span></span></div>
       </div>
     </details>
@@ -323,7 +323,7 @@
       <div class="fcard">
         <h3><span class="fi" style="background:var(--d-comms)"></span>2. 회의록·원천 확장 — 더 넓게</h3>
         <ul>
-          <li><span class="lb">회의록 populate —</span> 큐레이션 77건 등재(외부/전략 45 + 내부 모델·연구 32). 나머지는 CSV 데이터레이어(671건)에 존재, 필요 시 인스턴스화</li>
+          <li><span class="lb">회의록 populate —</span> 큐레이션 196건 등재(외부/전략 45 + 내부 모델·연구 32 + Google Drive 119). 나머지는 CSV 데이터레이어(671건)에 존재, 필요 시 인스턴스화</li>
           <li><span class="lb">캘린더 연동 —</span> 구글 캘린더(연결됨)로 <span class="tok">CalendarEvent</span> 채우고, 회의록화 여부·아젠다 불명확 미팅 추적</li>
           <li><span class="lb">덱 본문 —</span> IR 4.2.1·Business 3.7 덱 본문을 추출해 <span class="tok">Narrative</span>로, 내부 진행과 gap 분석</li>
           <li><span class="lb">가상랩 심화 —</span> 6개 랩별 연구·논문(Published papers)·서브그룹 진도를 채워 기술 도메인 강화</li>
